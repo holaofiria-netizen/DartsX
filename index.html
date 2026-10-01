@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DartsX</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#07111f;color:#fff;min-height:100vh}
+.app{max-width:1050px;margin:auto;padding:24px}.card{background:#101d30;border:1px solid #243b57;border-radius:20px;padding:25px;box-shadow:0 12px 40px #0005}
+h1{font-size:48px;margin:5px 0 10px}h2{margin-top:0}.logo{color:#35b8ff}.muted{color:#9eb0c5}
+button{border:0;border-radius:12px;padding:13px 18px;background:#168cff;color:white;font-size:16px;font-weight:bold;cursor:pointer;margin:5px}
+button.secondary{background:#24364d}button.danger{background:#c83b55}input{width:100%;padding:13px;margin:7px 0;border-radius:10px;border:1px solid #38516d;background:#081525;color:#fff;font-size:16px}
+.center{text-align:center}.hidden{display:none}.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.bot{padding:18px;background:#17283e;border:1px solid #29425e;border-radius:14px;cursor:pointer}.bot:hover{background:#1e3854}.bot b{display:block;font-size:19px}.bot small{color:#9eb0c5}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.scores{display:grid;grid-template-columns:1fr 1fr;gap:15px}.score{background:#17283e;border-radius:16px;padding:18px}.big{font-size:44px;font-weight:bold}.boards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.board{background:#0b1727;padding:12px;border-radius:15px}.board h3{text-align:center;margin:5px}.nums{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.nums button{margin:0;background:#203751}.nums button:hover{background:#168cff}.round{font-size:20px}.statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stat{background:#17283e;padding:20px;border-radius:15px;text-align:center}.stat strong{font-size:30px;display:block}
+@media(max-width:700px){.grid{grid-template-columns:repeat(2,1fr)}.scores,.boards{grid-template-columns:1fr}.statgrid{grid-template-columns:repeat(2,1fr)}h1{font-size:38px}}
+</style>
+</head>
+<body><div class="app" id="app"></div>
+<script>
+const A=document.getElementById('app');
+let user=localStorage.getItem('dx_user')||null;
+let game=null;
+
+function users(){return JSON.parse(localStorage.getItem('dx_users')||'{}')}
+function saveUsers(x){localStorage.setItem('dx_users',JSON.stringify(x))}
+function renderAuth(){
+ A.innerHTML=`<div class="card center" style="max-width:480px;margin:8vh auto">
+ <div class="logo" style="font-size:28px;font-weight:bold">🎯 DartsX</div>
+ <h1>DartsX</h1><p class="muted">Tu marcador de dardos.</p>
+ <div id="authbox"></div></div>`;
+ loginForm();
+}
+function loginForm(){
+ document.getElementById('authbox').innerHTML=`<h2>Iniciar sesión</h2>
+ <input id="name" placeholder="Usuario"><input id="pass" type="password" placeholder="Contraseña">
+ <button type="button" onclick="login()">Iniciar sesión</button><button class="secondary" type="button" onclick="registerForm()">Registrarme</button>`;
+}
+function registerForm(){
+ document.getElementById('authbox').innerHTML=`<h2>Crear cuenta</h2>
+ <input id="name" placeholder="Usuario"><input id="pass" type="password" placeholder="Contraseña">
+ <button type="button" onclick="register()">Registrarme</button><button class="secondary" type="button" onclick="loginForm()">Ya tengo cuenta</button>`;
+}
+function register(){
+ let n=document.getElementById('name').value.trim();
+ let p=document.getElementById('pass').value;
+ if(!n||!p)return alert('Rellena el usuario y la contraseña.');
+ let u=users();
+ if(u[n])return alert('Ese usuario ya existe. Pulsa «Ya tengo cuenta» para iniciar sesión.');
+ u[n]={pass:p,wins:0,losses:0,games:0,totalPoints:0,totalDarts:0};
+ saveUsers(u);
+ user=n;
+ localStorage.setItem('dx_user',n);
+ home();
+}
+function login(){
+ let n=document.getElementById('name').value.trim();
+ let p=document.getElementById('pass').value;
+ let u=users();
+ if(!u[n]||u[n].pass!==p)return alert('Usuario o contraseña incorrectos.');
+ user=n;
+ localStorage.setItem('dx_user',n);
+ home();
+}
+function home(){
+ A.innerHTML=`<div class="card"><div class="top"><div><div class="logo">🎯 DartsX</div><h1>Hola, ${user}</h1><p class="muted">¿Qué quieres hacer?</p></div><button class="secondary" onclick="logout()">Cerrar sesión</button></div>
+ <div class="center" style="margin-top:35px"><button style="font-size:24px;padding:22px 50px" onclick="bots()">🎯 PARTIDA</button>
+ <button style="font-size:20px;padding:20px 35px" onclick="account()">👤 MI CUENTA</button></div></div>`;
+}
+function bots(){
+ A.innerHTML=`<div class="card"><div class="top"><div><h2>Elige tu rival</h2><p class="muted">10 bots, de nivel 1 a nivel 10</p></div><button class="secondary" onclick="home()">Volver</button></div><div class="grid" id="bots"></div></div>`;
+ let s='';for(let i=1;i<=10;i++)s+=`<div class="bot" onclick="startGame(${i})"><b>🤖 Bot nivel ${i}</b><small>Dificultad ${i}/10</small></div>`;document.getElementById('bots').innerHTML=s;
+}
+function startGame(level){
+ game={level,turn:'you',you:501,bot:501,youDarts:0,botDarts:0,youPoints:0,botPoints:0,round:1,legDarts:0};
+ renderGame();
+}
+function renderGame(){
+ let g=game;
+ A.innerHTML=`<div class="card">
+ <div class="top"><div><div class="logo">🎯 DartsX — 501</div><div class="round">Ronda ${g.round} · Turno: <b>${g.turn==='you'?'TÚ':'BOT'}</b></div></div><button class="secondary" onclick="home()">Salir</button></div>
+ <div class="scores">
+ <div class="score"><div>TÚ</div><div class="big">${g.you}</div><div class="muted">Media: ${avg(g.youPoints,g.youDarts)}</div></div>
+ <div class="score"><div>BOT ${g.level}</div><div class="big">${g.bot}</div><div class="muted">Media: ${avg(g.botPoints,g.botDarts)}</div></div></div>
+ ${g.turn==='you'?board() : `<div class="center" style="padding:30px"><h2>🤖 Turno del Bot</h2><p>El bot lanzará sus 3 dardos.</p><button onclick="botTurn()">Lanzar dardos del bot</button></div>`}
+ <div class="center"><button class="secondary" onclick="nextRound()">Pasar de ronda</button></div>
+ </div>`;
+}
+function avg(points,darts){return darts?((points/darts)*3).toFixed(2):'0.00'}
+function board(){
+ let sections=[['S','1'],['D','2'],['T','3']];let out='<div class="boards">';
+ for(let z=0;z<3;z++){let [type]=sections[z];out+=`<div class="board"><h3>${type==='S'?'Número normal':type+' · por '+(type==='D'?2:3)}</h3><div class="nums">`;
+ for(let n=1;n<=20;n++)out+=`<button onclick="dart('${type}',${n})">${type}${n}</button>`;
+ out+='</div></div>'}return out+'</div>';
+}
+function dart(type,n){
+ if(game.turn!=='you')return;
+ let mult=type==='D'?2:type==='T'?3:1,val=n*mult;
+ if(val>game.you)return alert('Ese lanzamiento supera tu puntuación.'); 
+ game.you-=val;game.youPoints+=val;game.youDarts++;game.legDarts++;
+ if(game.you===0){finish(true);return}
+ if(game.legDarts===3){game.legDarts=0;game.turn='bot';renderGame()}else renderGame();
+}
+function botTurn(){
+ let g=game;let target=Math.max(1,Math.min(g.bot,Math.round((18+g.level*4)+(Math.random()*20-10))));
+ // Simula tres dardos sin permitir bajar de cero
+ for(let i=0;i<3;i++){if(g.bot===0)break;let max=Math.min(g.bot,target);let v=Math.max(1,Math.min(max,Math.round(max*(.45+g.level*.045)+Math.random()*12)));g.bot-=v;g.botPoints+=v;g.botDarts++;}
+ if(g.bot===0){finish(false);return}g.turn='you';g.round++;renderGame();
+}
+function nextRound(){if(game.turn==='you'){game.legDarts=0;game.turn='bot';renderGame()}else{game.turn='you';game.round++;renderGame()}}
+function finish(win){
+ let u=users();u[user].games++;if(win)u[user].wins++;else u[user].losses++;u[user].totalPoints+=game.youPoints;u[user].totalDarts+=game.youDarts;saveUsers(u);
+ A.innerHTML=`<div class="card center"><h1>${win?'🏆 ¡HAS GANADO!':'🤖 Ha ganado el bot'}</h1><p>TÚ: ${game.you} · BOT: ${game.bot}</p><p>Tu media: <b>${avg(game.youPoints,game.youDarts)}</b></p><button onclick="bots()">Nueva partida</button><button class="secondary" onclick="home()">Menú principal</button></div>`;
+}
+function account(){let u=users()[user];A.innerHTML=`<div class="card"><div class="top"><h2>👤 Mi cuenta</h2><button class="secondary" onclick="home()">Volver</button></div><h1>${user}</h1><div class="statgrid"><div class="stat"><strong>${u.games}</strong>Partidas</div><div class="stat"><strong>${u.wins}</strong>Victorias</div><div class="stat"><strong>${u.losses}</strong>Derrotas</div><div class="stat"><strong>${avg(u.totalPoints,u.totalDarts)}</strong>Media</div></div></div>`}
+function logout(){user=null;localStorage.removeItem('dx_user');renderAuth()}
+document.addEventListener('keydown',e=>{
+ if(e.key==='Enter' && document.getElementById('authbox')){
+   const btn=[...document.querySelectorAll('#authbox button')][0];
+   if(btn) btn.click();
+ }
+});
+renderAuth();
+</script></body></html>
