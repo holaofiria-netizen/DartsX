@@ -1,123 +1,1367 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DartsX</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DartsX 🎯</title>
+
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#07111f;color:#fff;min-height:100vh}
-.app{max-width:1050px;margin:auto;padding:24px}.card{background:#101d30;border:1px solid #243b57;border-radius:20px;padding:25px;box-shadow:0 12px 40px #0005}
-h1{font-size:48px;margin:5px 0 10px}h2{margin-top:0}.logo{color:#35b8ff}.muted{color:#9eb0c5}
-button{border:0;border-radius:12px;padding:13px 18px;background:#168cff;color:white;font-size:16px;font-weight:bold;cursor:pointer;margin:5px}
-button.secondary{background:#24364d}button.danger{background:#c83b55}input{width:100%;padding:13px;margin:7px 0;border-radius:10px;border:1px solid #38516d;background:#081525;color:#fff;font-size:16px}
-.center{text-align:center}.hidden{display:none}.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.bot{padding:18px;background:#17283e;border:1px solid #29425e;border-radius:14px;cursor:pointer}.bot:hover{background:#1e3854}.bot b{display:block;font-size:19px}.bot small{color:#9eb0c5}
-.top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.scores{display:grid;grid-template-columns:1fr 1fr;gap:15px}.score{background:#17283e;border-radius:16px;padding:18px}.big{font-size:44px;font-weight:bold}.boards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.board{background:#0b1727;padding:12px;border-radius:15px}.board h3{text-align:center;margin:5px}.nums{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.nums button{margin:0;background:#203751}.nums button:hover{background:#168cff}.round{font-size:20px}.statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stat{background:#17283e;padding:20px;border-radius:15px;text-align:center}.stat strong{font-size:30px;display:block}
-@media(max-width:700px){.grid{grid-template-columns:repeat(2,1fr)}.scores,.boards{grid-template-columns:1fr}.statgrid{grid-template-columns:repeat(2,1fr)}h1{font-size:38px}}
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#0d1117;
+    color:white;
+}
+
+.app{
+    max-width:650px;
+    margin:auto;
+    min-height:100vh;
+    padding:20px;
+}
+
+h1{
+    font-size:42px;
+    margin:15px 0 5px;
+}
+
+h2{
+    margin-top:5px;
+}
+
+.subtitle{
+    color:#9ca7b8;
+    margin-bottom:25px;
+}
+
+.card{
+    background:#171d27;
+    border-radius:20px;
+    padding:20px;
+    margin:15px 0;
+}
+
+button{
+    width:100%;
+    border:0;
+    border-radius:13px;
+    padding:14px;
+    margin:6px 0;
+    background:#293241;
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:hover{
+    opacity:.85;
+}
+
+.primary{
+    background:white;
+    color:#111;
+}
+
+.danger{
+    background:#713b43;
+}
+
+input{
+    width:100%;
+    padding:14px;
+    border-radius:12px;
+    border:1px solid #3a4352;
+    background:#0e131b;
+    color:white;
+    margin:6px 0;
+    font-size:16px;
+}
+
+.hidden{
+    display:none;
+}
+
+.score{
+    font-size:72px;
+    text-align:center;
+    font-weight:900;
+    margin:15px 0;
+}
+
+.player-name{
+    text-align:center;
+    color:#aeb8c8;
+    font-size:18px;
+}
+
+.dart-counter{
+    text-align:center;
+    color:#aeb8c8;
+}
+
+.number-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:7px;
+}
+
+.number-grid button{
+    padding:13px 4px;
+    margin:0;
+}
+
+.bull{
+    background:#596b83 !important;
+}
+
+.special{
+    background:#38475c;
+}
+
+.turn-darts{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.dart{
+    background:#293241;
+    padding:10px 15px;
+    border-radius:10px;
+}
+
+.rank-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px 5px;
+    border-bottom:1px solid #303947;
+}
+
+.rank-position{
+    font-weight:bold;
+}
+
+.rank-average{
+    font-weight:bold;
+}
+
+.stat{
+    background:#202734;
+    padding:15px;
+    border-radius:13px;
+    margin:8px 0;
+    display:flex;
+    justify-content:space-between;
+}
+
+.bot{
+    background:#202734;
+    padding:12px;
+    border-radius:12px;
+    margin:7px 0;
+}
+
+.top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.small{
+    font-size:13px;
+    color:#9ca7b8;
+}
+
+.back{
+    background:transparent;
+    text-align:left;
+    padding:5px 0;
+    width:auto;
+}
+
+.success{
+    color:#69db7c;
+}
+
+.warning{
+    color:#ffd166;
+}
 </style>
 </head>
-<body><div class="app" id="app"></div>
-<script>
-const A=document.getElementById('app');
-let user=localStorage.getItem('dx_user')||null;
-let game=null;
 
-function users(){return JSON.parse(localStorage.getItem('dx_users')||'{}')}
-function saveUsers(x){localStorage.setItem('dx_users',JSON.stringify(x))}
-function renderAuth(){
- A.innerHTML=`<div class="card center" style="max-width:480px;margin:8vh auto">
- <div class="logo" style="font-size:28px;font-weight:bold">🎯 DartsX</div>
- <h1>DartsX</h1><p class="muted">Tu marcador de dardos.</p>
- <div id="authbox"></div></div>`;
- loginForm();
+<body>
+
+<div id="app" class="app"></div>
+
+<script>
+
+/* =====================================================
+   DATOS
+===================================================== */
+
+const STORAGE_KEY = "DARTSX_DATA";
+
+let data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+    users: {},
+    currentUser: null
+};
+
+let game = null;
+
+let selectedBots = [];
+
+let multiplier = 1;
+
+
+/* =====================================================
+   GUARDAR
+===================================================== */
+
+function saveData(){
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(data)
+    );
+
 }
-function loginForm(){
- document.getElementById('authbox').innerHTML=`<h2>Iniciar sesión</h2>
- <input id="name" placeholder="Usuario"><input id="pass" type="password" placeholder="Contraseña">
- <button type="button" onclick="login()">Iniciar sesión</button><button class="secondary" type="button" onclick="registerForm()">Registrarme</button>`;
+
+
+/* =====================================================
+   ESCAPAR TEXTO
+===================================================== */
+
+function escapeHTML(text){
+
+    return String(text)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
 }
-function registerForm(){
- document.getElementById('authbox').innerHTML=`<h2>Crear cuenta</h2>
- <input id="name" placeholder="Usuario"><input id="pass" type="password" placeholder="Contraseña">
- <button type="button" onclick="register()">Registrarme</button><button class="secondary" type="button" onclick="loginForm()">Ya tengo cuenta</button>`;
+
+
+/* =====================================================
+   PANTALLA DE INICIO DE SESIÓN
+===================================================== */
+
+function showLogin(){
+
+    document.getElementById("app").innerHTML = `
+
+        <h1>DartsX 🎯</h1>
+
+        <p class="subtitle">
+            Tu marcador de dardos
+        </p>
+
+        <div class="card">
+
+            <h2>Iniciar sesión</h2>
+
+            <input
+                id="loginName"
+                placeholder="Nombre de jugador"
+            >
+
+            <button
+                class="primary"
+                onclick="login()"
+            >
+                Iniciar sesión
+            </button>
+
+        </div>
+
+        <div class="card">
+
+            <h2>Crear cuenta</h2>
+
+            <input
+                id="registerName"
+                placeholder="Nuevo nombre"
+            >
+
+            <button
+                onclick="register()"
+            >
+                Registrarse
+            </button>
+
+        </div>
+
+    `;
+
 }
+
+
+/* =====================================================
+   REGISTRARSE
+===================================================== */
+
 function register(){
- let n=document.getElementById('name').value.trim();
- let p=document.getElementById('pass').value;
- if(!n||!p)return alert('Rellena el usuario y la contraseña.');
- let u=users();
- if(u[n])return alert('Ese usuario ya existe. Pulsa «Ya tengo cuenta» para iniciar sesión.');
- u[n]={pass:p,wins:0,losses:0,games:0,totalPoints:0,totalDarts:0};
- saveUsers(u);
- user=n;
- localStorage.setItem('dx_user',n);
- home();
+
+    let name =
+        document.getElementById("registerName")
+        .value
+        .trim();
+
+    if(!name){
+
+        alert("Escribe un nombre.");
+
+        return;
+    }
+
+    if(data.users[name]){
+
+        alert("Ese jugador ya existe.");
+
+        return;
+    }
+
+    data.users[name] = {
+
+        totalPoints:0,
+
+        totalDarts:0,
+
+        matches:0,
+
+        wins:0
+
+    };
+
+    data.currentUser = name;
+
+    saveData();
+
+    showHome();
+
 }
+
+
+/* =====================================================
+   LOGIN
+===================================================== */
+
 function login(){
- let n=document.getElementById('name').value.trim();
- let p=document.getElementById('pass').value;
- let u=users();
- if(!u[n]||u[n].pass!==p)return alert('Usuario o contraseña incorrectos.');
- user=n;
- localStorage.setItem('dx_user',n);
- home();
+
+    let name =
+        document.getElementById("loginName")
+        .value
+        .trim();
+
+    if(!name){
+
+        alert("Escribe tu nombre.");
+
+        return;
+    }
+
+    if(!data.users[name]){
+
+        alert("No existe esa cuenta. Regístrate primero.");
+
+        return;
+    }
+
+    data.currentUser = name;
+
+    saveData();
+
+    showHome();
+
 }
-function home(){
- A.innerHTML=`<div class="card"><div class="top"><div><div class="logo">🎯 DartsX</div><h1>Hola, ${user}</h1><p class="muted">¿Qué quieres hacer?</p></div><button class="secondary" onclick="logout()">Cerrar sesión</button></div>
- <div class="center" style="margin-top:35px"><button style="font-size:24px;padding:22px 50px" onclick="bots()">🎯 PARTIDA</button>
- <button style="font-size:20px;padding:20px 35px" onclick="account()">👤 MI CUENTA</button></div></div>`;
+
+
+/* =====================================================
+   HOME
+===================================================== */
+
+function showHome(){
+
+    let user = data.currentUser;
+
+    document.getElementById("app").innerHTML = `
+
+        <h1>DartsX 🎯</h1>
+
+        <p class="subtitle">
+            Hola, ${escapeHTML(user)}
+        </p>
+
+        <button
+            class="primary"
+            onclick="showGameSetup()"
+        >
+            🎯 Nueva partida
+        </button>
+
+        <button onclick="showAccount()">
+            👤 Mi cuenta
+        </button>
+
+        <button onclick="showRanking()">
+            🏆 Ranking
+        </button>
+
+        <button
+            class="danger"
+            onclick="logout()"
+        >
+            Cerrar sesión
+        </button>
+
+    `;
+
 }
-function bots(){
- A.innerHTML=`<div class="card"><div class="top"><div><h2>Elige tu rival</h2><p class="muted">10 bots, de nivel 1 a nivel 10</p></div><button class="secondary" onclick="home()">Volver</button></div><div class="grid" id="bots"></div></div>`;
- let s='';for(let i=1;i<=10;i++)s+=`<div class="bot" onclick="startGame(${i})"><b>🤖 Bot nivel ${i}</b><small>Dificultad ${i}/10</small></div>`;document.getElementById('bots').innerHTML=s;
+
+
+/* =====================================================
+   CONFIGURAR PARTIDA
+===================================================== */
+
+function showGameSetup(){
+
+    selectedBots = [];
+
+    document.getElementById("app").innerHTML = `
+
+        <button
+            class="back"
+            onclick="showHome()"
+        >
+            ← Volver
+        </button>
+
+        <h1>Nueva partida</h1>
+
+        <div class="card">
+
+            <h2>Modo de juego</h2>
+
+            <button
+                class="primary"
+                onclick="start501()"
+            >
+                🎯 501
+            </button>
+
+            <button
+                onclick="alert('El modo Cricket estará disponible próximamente.')"
+            >
+                🎯 Cricket
+            </button>
+
+        </div>
+
+        <div class="card">
+
+            <h2>Jugadores</h2>
+
+            <p>
+                👤 ${escapeHTML(data.currentUser)}
+                <span class="success"> Tú</span>
+            </p>
+
+            <button onclick="addBot()">
+                + Añadir bot
+            </button>
+
+            <div id="botsList"></div>
+
+        </div>
+
+        <button
+            class="primary"
+            onclick="start501()"
+        >
+            Empezar partida
+        </button>
+
+    `;
+
 }
-function startGame(level){
- game={level,turn:'you',you:501,bot:501,youDarts:0,botDarts:0,youPoints:0,botPoints:0,round:1,legDarts:0};
- renderGame();
+
+
+/* =====================================================
+   AÑADIR BOT
+===================================================== */
+
+function addBot(){
+
+    if(selectedBots.length >= 3){
+
+        alert("Puedes añadir hasta 3 bots.");
+
+        return;
+    }
+
+    let level =
+        selectedBots.length + 1;
+
+    selectedBots.push(level);
+
+    updateBots();
+
 }
+
+
+/* =====================================================
+   MOSTRAR BOTS
+===================================================== */
+
+function updateBots(){
+
+    let html = "";
+
+    selectedBots.forEach(function(level,index){
+
+        html += `
+
+            <div class="bot">
+
+                🤖 Bot ${index + 1}
+
+                <br>
+
+                <span class="small">
+                    Nivel ${level} / 10
+                </span>
+
+            </div>
+
+        `;
+
+    });
+
+    document.getElementById("botsList").innerHTML = html;
+
+}
+
+
+/* =====================================================
+   EMPEZAR 501
+===================================================== */
+
+function start501(){
+
+    let players = [];
+
+    players.push({
+
+        name:data.currentUser,
+
+        score:501,
+
+        darts:0,
+
+        pointsScored:0,
+
+        isBot:false,
+
+        level:10
+
+    });
+
+
+    selectedBots.forEach(function(level){
+
+        players.push({
+
+            name:"Bot nivel " + level,
+
+            score:501,
+
+            darts:0,
+
+            pointsScored:0,
+
+            isBot:true,
+
+            level:level
+
+        });
+
+    });
+
+
+    game = {
+
+        players:players,
+
+        current:0,
+
+        turnDarts:[],
+
+        turnPoints:0
+
+    };
+
+    multiplier = 1;
+
+    renderGame();
+
+}
+
+
+/* =====================================================
+   MOSTRAR PARTIDA
+===================================================== */
+
 function renderGame(){
- let g=game;
- A.innerHTML=`<div class="card">
- <div class="top"><div><div class="logo">🎯 DartsX — 501</div><div class="round">Ronda ${g.round} · Turno: <b>${g.turn==='you'?'TÚ':'BOT'}</b></div></div><button class="secondary" onclick="home()">Salir</button></div>
- <div class="scores">
- <div class="score"><div>TÚ</div><div class="big">${g.you}</div><div class="muted">Media: ${avg(g.youPoints,g.youDarts)}</div></div>
- <div class="score"><div>BOT ${g.level}</div><div class="big">${g.bot}</div><div class="muted">Media: ${avg(g.botPoints,g.botDarts)}</div></div></div>
- ${g.turn==='you'?board() : `<div class="center" style="padding:30px"><h2>🤖 Turno del Bot</h2><p>El bot lanzará sus 3 dardos.</p><button onclick="botTurn()">Lanzar dardos del bot</button></div>`}
- <div class="center"><button class="secondary" onclick="nextRound()">Pasar de ronda</button></div>
- </div>`;
+
+    let player =
+        game.players[game.current];
+
+    document.getElementById("app").innerHTML = `
+
+        <div class="top">
+
+            <button
+                class="back"
+                onclick="leaveGame()"
+            >
+                ← Salir
+            </button>
+
+            <span class="small">
+                ${game.current + 1}/${game.players.length}
+            </span>
+
+        </div>
+
+        <div class="card">
+
+            <div class="player-name">
+                ${escapeHTML(player.name)}
+            </div>
+
+            <div class="score">
+                ${player.score}
+            </div>
+
+            <div class="dart-counter">
+
+                Dardos del turno:
+                ${game.turnDarts.length}/3
+
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Turno actual</h3>
+
+            <div class="turn-darts">
+
+                ${
+                    game.turnDarts.length === 0
+
+                    ?
+
+                    "<span class='small'>Todavía no has lanzado.</span>"
+
+                    :
+
+                    game.turnDarts.map(function(d){
+
+                        return `
+                            <span class="dart">
+                                ${d}
+                            </span>
+                        `;
+
+                    }).join("")
+
+                }
+
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Puntuación</h3>
+
+            <div class="number-grid">
+
+                ${generateNumbers()}
+
+                <button
+                    class="bull"
+                    onclick="throwDart(25,'BULL')"
+                >
+                    BULL<br>
+                    25
+                </button>
+
+                <button
+                    class="bull"
+                    onclick="throwDart(50,'DOBLE BULL')"
+                >
+                    DOBLE BULL<br>
+                    50
+                </button>
+
+                <button
+                    class="special"
+                    onclick="selectMultiplier(2)"
+                >
+                    DOBLE
+                </button>
+
+                <button
+                    class="special"
+                    onclick="selectMultiplier(3)"
+                >
+                    TRIPLE
+                </button>
+
+                <button
+                    onclick="throwDart(0,'MISS')"
+                >
+                    MISS
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <button
+                onclick="finishTurn()"
+            >
+                Terminar turno
+            </button>
+
+        </div>
+
+    `;
+
 }
-function avg(points,darts){return darts?((points/darts)*3).toFixed(2):'0.00'}
-function board(){
- let sections=[['S','1'],['D','2'],['T','3']];let out='<div class="boards">';
- for(let z=0;z<3;z++){let [type]=sections[z];out+=`<div class="board"><h3>${type==='S'?'Número normal':type+' · por '+(type==='D'?2:3)}</h3><div class="nums">`;
- for(let n=1;n<=20;n++)out+=`<button onclick="dart('${type}',${n})">${type}${n}</button>`;
- out+='</div></div>'}return out+'</div>';
+
+
+/* =====================================================
+   GENERAR NÚMEROS
+===================================================== */
+
+function generateNumbers(){
+
+    let html = "";
+
+    for(let i=1;i<=20;i++){
+
+        html += `
+
+            <button
+                onclick="throwDart(${i},'${i}')"
+            >
+                ${i}
+            </button>
+
+        `;
+
+    }
+
+    return html;
+
 }
-function dart(type,n){
- if(game.turn!=='you')return;
- let mult=type==='D'?2:type==='T'?3:1,val=n*mult;
- if(val>game.you)return alert('Ese lanzamiento supera tu puntuación.'); 
- game.you-=val;game.youPoints+=val;game.youDarts++;game.legDarts++;
- if(game.you===0){finish(true);return}
- if(game.legDarts===3){game.legDarts=0;game.turn='bot';renderGame()}else renderGame();
+
+
+/* =====================================================
+   MULTIPLICADOR
+===================================================== */
+
+function selectMultiplier(value){
+
+    multiplier = value;
+
+    if(value === 2){
+
+        alert("DOBLE seleccionado");
+
+    }else{
+
+        alert("TRIPLE seleccionado");
+
+    }
+
 }
-function botTurn(){
- let g=game;let target=Math.max(1,Math.min(g.bot,Math.round((18+g.level*4)+(Math.random()*20-10))));
- // Simula tres dardos sin permitir bajar de cero
- for(let i=0;i<3;i++){if(g.bot===0)break;let max=Math.min(g.bot,target);let v=Math.max(1,Math.min(max,Math.round(max*(.45+g.level*.045)+Math.random()*12)));g.bot-=v;g.botPoints+=v;g.botDarts++;}
- if(g.bot===0){finish(false);return}g.turn='you';g.round++;renderGame();
+
+
+/* =====================================================
+   LANZAR DARDO
+===================================================== */
+
+function throwDart(base, label){
+
+    let player =
+        game.players[game.current];
+
+
+    let points = base;
+
+
+    /*
+       Bull y doble Bull no utilizan
+       el multiplicador.
+    */
+
+    if(base !== 25 && base !== 50){
+
+        points = base * multiplier;
+
+    }
+
+
+    multiplier = 1;
+
+
+    /*
+       Reglas del 501:
+       no puedes bajar de 0
+       ni quedarte en 1.
+    */
+
+    if(
+        points > player.score ||
+        player.score - points === 1
+    ){
+
+        alert("Puntuación no válida.");
+
+        return;
+
+    }
+
+
+    player.score -= points;
+
+    player.darts++;
+
+    player.pointsScored += points;
+
+    game.turnDarts.push(label);
+
+    game.turnPoints += points;
+
+
+    if(player.score === 0){
+
+        finishGame(player);
+
+        return;
+
+    }
+
+
+    if(game.turnDarts.length >= 3){
+
+        finishTurn();
+
+        return;
+
+    }
+
+
+    renderGame();
+
 }
-function nextRound(){if(game.turn==='you'){game.legDarts=0;game.turn='bot';renderGame()}else{game.turn='you';game.round++;renderGame()}}
-function finish(win){
- let u=users();u[user].games++;if(win)u[user].wins++;else u[user].losses++;u[user].totalPoints+=game.youPoints;u[user].totalDarts+=game.youDarts;saveUsers(u);
- A.innerHTML=`<div class="card center"><h1>${win?'🏆 ¡HAS GANADO!':'🤖 Ha ganado el bot'}</h1><p>TÚ: ${game.you} · BOT: ${game.bot}</p><p>Tu media: <b>${avg(game.youPoints,game.youDarts)}</b></p><button onclick="bots()">Nueva partida</button><button class="secondary" onclick="home()">Menú principal</button></div>`;
+
+
+/* =====================================================
+   TERMINAR TURNO
+===================================================== */
+
+function finishTurn(){
+
+    game.turnDarts = [];
+
+    game.turnPoints = 0;
+
+    multiplier = 1;
+
+
+    game.current++;
+
+    if(game.current >= game.players.length){
+
+        game.current = 0;
+
+    }
+
+
+    let next =
+        game.players[game.current];
+
+
+    if(next.isBot){
+
+        renderGame();
+
+        setTimeout(botPlay,600);
+
+    }else{
+
+        renderGame();
+
+    }
+
 }
-function account(){let u=users()[user];A.innerHTML=`<div class="card"><div class="top"><h2>👤 Mi cuenta</h2><button class="secondary" onclick="home()">Volver</button></div><h1>${user}</h1><div class="statgrid"><div class="stat"><strong>${u.games}</strong>Partidas</div><div class="stat"><strong>${u.wins}</strong>Victorias</div><div class="stat"><strong>${u.losses}</strong>Derrotas</div><div class="stat"><strong>${avg(u.totalPoints,u.totalDarts)}</strong>Media</div></div></div>`}
-function logout(){user=null;localStorage.removeItem('dx_user');renderAuth()}
-document.addEventListener('keydown',e=>{
- if(e.key==='Enter' && document.getElementById('authbox')){
-   const btn=[...document.querySelectorAll('#authbox button')][0];
-   if(btn) btn.click();
- }
-});
-renderAuth();
-</script></body></html>
+
+
+/* =====================================================
+   JUGAR BOT
+===================================================== */
+
+function botPlay(){
+
+    let bot =
+        game.players[game.current];
+
+    let darts = 0;
+
+
+    function botDart(){
+
+        if(darts >= 3){
+
+            finishTurn();
+
+            return;
+
+        }
+
+
+        let points;
+
+
+        /*
+           Cuanto mayor es el nivel,
+           más probable es que consiga
+           una puntuación alta.
+        */
+
+        let random =
+            Math.random();
+
+
+        if(bot.level >= 8 && random > 0.45){
+
+            points =
+                Math.floor(Math.random()*10)+11;
+
+        }else if(bot.level >= 5 && random > 0.35){
+
+            points =
+                Math.floor(Math.random()*10)+6;
+
+        }else{
+
+            points =
+                Math.floor(Math.random()*10)+1;
+
+        }
+
+
+        /*
+           Intentar no pasarse.
+        */
+
+        if(points > bot.score){
+
+            points = 0;
+
+        }
+
+
+        if(bot.score - points === 1){
+
+            points = 0;
+
+        }
+
+
+        bot.score -= points;
+
+        bot.darts++;
+
+        bot.pointsScored += points;
+
+        game.turnDarts.push(points);
+
+        darts++;
+
+
+        renderGame();
+
+
+        if(bot.score === 0){
+
+            finishGame(bot);
+
+            return;
+
+        }
+
+
+        setTimeout(botDart,500);
+
+    }
+
+
+    botDart();
+
+}
+
+
+/* =====================================================
+   TERMINAR PARTIDA
+===================================================== */
+
+function finishGame(winner){
+
+    game.players.forEach(function(player){
+
+        let user =
+            data.users[player.name];
+
+
+        if(!user){
+
+            /*
+               Los bots no necesitan
+               cuenta permanente.
+            */
+
+            return;
+
+        }
+
+
+        user.totalPoints +=
+            player.pointsScored;
+
+        user.totalDarts +=
+            player.darts;
+
+        user.matches++;
+
+
+        if(player.name === winner.name){
+
+            user.wins++;
+
+        }
+
+    });
+
+
+    saveData();
+
+
+    document.getElementById("app").innerHTML = `
+
+        <h1>🏆 ¡Partida terminada!</h1>
+
+        <div class="card">
+
+            <h2>
+                ${escapeHTML(winner.name)}
+                gana
+            </h2>
+
+            <p>
+                ¡Enhorabuena!
+            </p>
+
+        </div>
+
+        <button
+            class="primary"
+            onclick="showRanking()"
+        >
+            🏆 Ver ranking
+        </button>
+
+        <button onclick="showHome()">
+            Inicio
+        </button>
+
+    `;
+
+}
+
+
+/* =====================================================
+   MEDIA
+===================================================== */
+
+function getAverage(name){
+
+    let user =
+        data.users[name];
+
+
+    if(
+        !user ||
+        user.totalDarts === 0
+    ){
+
+        return 0;
+
+    }
+
+
+    /*
+       Media de 3 dardos.
+    */
+
+    return (
+        user.totalPoints /
+        user.totalDarts *
+        3
+    );
+
+}
+
+
+/* =====================================================
+   RANKING
+===================================================== */
+
+function showRanking(){
+
+    let players =
+        Object.keys(data.users);
+
+
+    players.sort(function(a,b){
+
+        return getAverage(b) -
+               getAverage(a);
+
+    });
+
+
+    let html = `
+
+        <button
+            class="back"
+            onclick="showHome()"
+        >
+            ← Volver
+        </button>
+
+        <h1>🏆 Ranking</h1>
+
+        <div class="card">
+
+    `;
+
+
+    if(players.length === 0){
+
+        html += `
+            <p class="small">
+                Todavía no hay jugadores.
+            </p>
+        `;
+
+    }
+
+
+    players.forEach(function(name,index){
+
+        let user =
+            data.users[name];
+
+
+        html += `
+
+            <div class="rank-row">
+
+                <div>
+
+                    <span class="rank-position">
+                        ${index + 1}.
+                    </span>
+
+                    ${escapeHTML(name)}
+
+                </div>
+
+                <div class="rank-average">
+
+                    ${getAverage(name).toFixed(2)}
+
+                </div>
+
+            </div>
+
+        `;
+
+    });
+
+
+    html += `
+
+        </div>
+
+        <p class="small">
+            La media es puntos por 3 dardos.
+        </p>
+
+    `;
+
+
+    document.getElementById("app").innerHTML =
+        html;
+
+}
+
+
+/* =====================================================
+   MI CUENTA
+===================================================== */
+
+function showAccount(){
+
+    let name =
+        data.currentUser;
+
+
+    let user =
+        data.users[name];
+
+
+    document.getElementById("app").innerHTML = `
+
+        <button
+            class="back"
+            onclick="showHome()"
+        >
+            ← Volver
+        </button>
+
+        <h1>👤 Mi cuenta</h1>
+
+        <div class="card">
+
+            <h2>
+                ${escapeHTML(name)}
+            </h2>
+
+            <div class="stat">
+
+                <span>Media</span>
+
+                <strong>
+                    ${getAverage(name).toFixed(2)}
+                </strong>
+
+            </div>
+
+            <div class="stat">
+
+                <span>Partidas</span>
+
+                <strong>
+                    ${user.matches}
+                </strong>
+
+            </div>
+
+            <div class="stat">
+
+                <span>Victorias</span>
+
+                <strong>
+                    ${user.wins}
+                </strong>
+
+            </div>
+
+            <div class="stat">
+
+                <span>Dardos</span>
+
+                <strong>
+                    ${user.totalDarts}
+                </strong>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   SALIR DE PARTIDA
+===================================================== */
+
+function leaveGame(){
+
+    if(
+        confirm(
+            "¿Seguro que quieres salir de la partida?"
+        )
+    ){
+
+        game = null;
+
+        showHome();
+
+    }
+
+}
+
+
+/* =====================================================
+   CERRAR SESIÓN
+===================================================== */
+
+function logout(){
+
+    data.currentUser = null;
+
+    saveData();
+
+    showLogin();
+
+}
+
+
+/* =====================================================
+   INICIO
+===================================================== */
+
+if(data.currentUser){
+
+    showHome();
+
+}else{
+
+    showLogin();
+
+}
+
+</script>
+
+</body>
+</html>
