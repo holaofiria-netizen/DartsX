@@ -6,18 +6,16 @@
 <title>DartsX 🎯</title>
 
 <style>
-*{
-    box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
     margin:0;
-    font-family:Arial,sans-serif;
     background:#0d1117;
     color:white;
+    font-family:Arial,sans-serif;
 }
 
-.app{
+#app{
     max-width:650px;
     margin:auto;
     min-height:100vh;
@@ -26,36 +24,41 @@ body{
 
 h1{
     font-size:42px;
-    margin:15px 0 5px;
+    margin:10px 0;
 }
 
 h2{
     margin-top:5px;
 }
 
-.subtitle{
-    color:#9ca7b8;
-    margin-bottom:25px;
-}
-
 .card{
     background:#171d27;
-    border-radius:20px;
     padding:20px;
+    border-radius:20px;
     margin:15px 0;
+}
+
+input,select{
+    width:100%;
+    padding:14px;
+    margin:6px 0;
+    border-radius:12px;
+    border:1px solid #394352;
+    background:#0d121a;
+    color:white;
+    font-size:16px;
 }
 
 button{
     width:100%;
-    border:0;
-    border-radius:13px;
     padding:14px;
     margin:6px 0;
+    border:0;
+    border-radius:13px;
     background:#293241;
     color:white;
     font-size:16px;
     font-weight:bold;
-    cursor:pointer;
 }
 
 button:hover{
@@ -71,56 +74,63 @@ button:hover{
     background:#713b43;
 }
 
-input{
-    width:100%;
-    padding:14px;
-    border-radius:12px;
-    border:1px solid #3a4352;
-    background:#0e131b;
-    color:white;
-    margin:6px 0;
-    font-size:16px;
+.back{
+    background:transparent;
+    text-align:left;
+    width:auto;
 }
 
-.hidden{
-    display:none;
+.small{
+    color:#9da8b8;
+    font-size:14px;
 }
 
 .score{
     font-size:72px;
     text-align:center;
     font-weight:900;
-    margin:15px 0;
+    margin:20px 0;
 }
 
-.player-name{
+.player{
     text-align:center;
     color:#aeb8c8;
-    font-size:18px;
+    font-size:20px;
 }
 
 .dart-counter{
     text-align:center;
-    color:#aeb8c8;
+    color:#9da8b8;
 }
 
-.number-grid{
+.numbers{
     display:grid;
     grid-template-columns:repeat(5,1fr);
-    gap:7px;
+    gap:6px;
 }
 
-.number-grid button{
-    padding:13px 4px;
+.numbers button{
     margin:0;
+    padding:13px 3px;
 }
 
 .bull{
-    background:#596b83 !important;
+    background:#56677e;
 }
 
 .special{
-    background:#38475c;
+    background:#39485c;
+}
+
+.players-list{
+    margin-top:10px;
+}
+
+.player-box{
+    background:#202734;
+    padding:13px;
+    border-radius:12px;
+    margin:7px 0;
 }
 
 .turn-darts{
@@ -135,69 +145,55 @@ input{
     border-radius:10px;
 }
 
-.rank-row{
+.ranking-row{
     display:flex;
     justify-content:space-between;
-    align-items:center;
     padding:14px 5px;
-    border-bottom:1px solid #303947;
+    border-bottom:1px solid #303846;
 }
 
-.rank-position{
-    font-weight:bold;
-}
-
-.rank-average{
-    font-weight:bold;
+.stats{
+    display:grid;
+    gap:8px;
 }
 
 .stat{
     background:#202734;
     padding:15px;
-    border-radius:13px;
-    margin:8px 0;
-    display:flex;
-    justify-content:space-between;
-}
-
-.bot{
-    background:#202734;
-    padding:12px;
     border-radius:12px;
-    margin:7px 0;
-}
-
-.top{
     display:flex;
     justify-content:space-between;
+}
+
+.hidden{
+    display:none;
+}
+
+.mode-button{
+    padding:18px;
+    font-size:18px;
+}
+
+.selected{
+    outline:3px solid white;
+}
+
+.bot-level{
+    display:flex;
     align-items:center;
+    gap:8px;
 }
 
-.small{
-    font-size:13px;
-    color:#9ca7b8;
+.bot-level select{
+    margin:0;
 }
 
-.back{
-    background:transparent;
-    text-align:left;
-    padding:5px 0;
-    width:auto;
-}
-
-.success{
-    color:#69db7c;
-}
-
-.warning{
-    color:#ffd166;
-}
 </style>
 </head>
 
 <body>
 
-<div id="app" class="app"></div>
+<div id="app"></div>
 
 <script>
 
@@ -205,11 +201,14 @@ input{
    DATOS
 ===================================================== */
 
-const STORAGE_KEY = "DARTSX_DATA";
+const STORAGE_KEY = "DARTSX_COMPLETO";
 
-let data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
-    users: {},
-    currentUser: null
+let data =
+JSON.parse(localStorage.getItem(STORAGE_KEY))
+||
+{
+    users:{},
+    currentUser:null
 };
 
 let game = null;
@@ -223,7 +222,7 @@ let multiplier = 1;
    GUARDAR
 ===================================================== */
 
-function saveData(){
+function save(){
 
     localStorage.setItem(
         STORAGE_KEY,
@@ -237,39 +236,45 @@ function saveData(){
    ESCAPAR TEXTO
 ===================================================== */
 
-function escapeHTML(text){
+function safe(text){
 
     return String(text)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 
 }
 
 
 /* =====================================================
-   PANTALLA DE INICIO DE SESIÓN
+   PANTALLA LOGIN
 ===================================================== */
 
 function showLogin(){
 
-    document.getElementById("app").innerHTML = `
+    app.innerHTML = `
 
         <h1>DartsX 🎯</h1>
 
-        <p class="subtitle">
-            Tu marcador de dardos
+        <p class="small">
+            Marcador de dardos 501
         </p>
 
         <div class="card">
 
-            <h2>Iniciar sesión</h2>
+            <h2>🔐 Iniciar sesión</h2>
 
             <input
                 id="loginName"
-                placeholder="Nombre de jugador"
+                placeholder="Nombre"
+            >
+
+            <input
+                id="loginPassword"
+                type="password"
+                placeholder="Contraseña"
             >
 
             <button
@@ -283,17 +288,27 @@ function showLogin(){
 
         <div class="card">
 
-            <h2>Crear cuenta</h2>
+            <h2>📝 Registrarse</h2>
 
             <input
                 id="registerName"
-                placeholder="Nuevo nombre"
+                placeholder="Crea tu nombre"
             >
 
-            <button
-                onclick="register()"
+            <input
+                id="registerPassword"
+                type="password"
+                placeholder="Crea tu contraseña"
             >
-                Registrarse
+
+            <input
+                id="registerPassword2"
+                type="password"
+                placeholder="Repite la contraseña"
+            >
+
+            <button onclick="register()">
+                Crear cuenta
             </button>
 
         </div>
@@ -304,31 +319,66 @@ function showLogin(){
 
 
 /* =====================================================
-   REGISTRARSE
+   REGISTRO
 ===================================================== */
 
 function register(){
 
     let name =
-        document.getElementById("registerName")
-        .value
-        .trim();
+    document.getElementById("registerName")
+    .value
+    .trim();
 
-    if(!name){
+    let password =
+    document.getElementById("registerPassword")
+    .value;
 
-        alert("Escribe un nombre.");
+    let password2 =
+    document.getElementById("registerPassword2")
+    .value;
+
+
+    if(!name || !password){
+
+        alert("Completa todos los campos.");
 
         return;
+
     }
+
+
+    if(password !== password2){
+
+        alert("Las contraseñas no coinciden.");
+
+        return;
+
+    }
+
+
+    if(password.length < 4){
+
+        alert(
+            "La contraseña debe tener al menos 4 caracteres."
+        );
+
+        return;
+
+    }
+
 
     if(data.users[name]){
 
-        alert("Ese jugador ya existe.");
+        alert("Ese nombre ya está registrado.");
 
         return;
+
     }
 
+
     data.users[name] = {
+
+        password:password,
 
         totalPoints:0,
 
@@ -340,9 +390,10 @@ function register(){
 
     };
 
+
     data.currentUser = name;
 
-    saveData();
+    save();
 
     showHome();
 
@@ -356,27 +407,39 @@ function register(){
 function login(){
 
     let name =
-        document.getElementById("loginName")
-        .value
-        .trim();
+    document.getElementById("loginName")
+    .value
+    .trim();
 
-    if(!name){
+    let password =
+    document.getElementById("loginPassword")
+    .value;
 
-        alert("Escribe tu nombre.");
-
-        return;
-    }
 
     if(!data.users[name]){
 
-        alert("No existe esa cuenta. Regístrate primero.");
+        alert("El usuario no existe.");
 
         return;
+
     }
+
+
+    if(
+        data.users[name].password !==
+        password
+    ){
+
+        alert("Contraseña incorrecta.");
+
+        return;
+
+    }
+
 
     data.currentUser = name;
 
-    saveData();
+    save();
 
     showHome();
 
@@ -389,29 +452,30 @@ function login(){
 
 function showHome(){
 
-    let user = data.currentUser;
+    let name = data.currentUser;
 
-    document.getElementById("app").innerHTML = `
+
+    app.innerHTML = `
 
         <h1>DartsX 🎯</h1>
 
-        <p class="subtitle">
-            Hola, ${escapeHTML(user)}
+        <p class="small">
+            Bienvenido, ${safe(name)}
         </p>
 
         <button
             class="primary"
-            onclick="showGameSetup()"
+            onclick="showGameType()"
         >
             🎯 Nueva partida
         </button>
 
-        <button onclick="showAccount()">
-            👤 Mi cuenta
-        </button>
-
         <button onclick="showRanking()">
             🏆 Ranking
+        </button>
+
+        <button onclick="showAccount()">
+            👤 Mi cuenta
         </button>
 
         <button
@@ -427,14 +491,12 @@ function showHome(){
 
 
 /* =====================================================
-   CONFIGURAR PARTIDA
+   ELEGIR TIPO DE PARTIDA
 ===================================================== */
 
-function showGameSetup(){
+function showGameType(){
 
-    selectedBots = [];
-
-    document.getElementById("app").innerHTML = `
+    app.innerHTML = `
 
         <button
             class="back"
@@ -447,48 +509,84 @@ function showGameSetup(){
 
         <div class="card">
 
-            <h2>Modo de juego</h2>
+            <h2>¿Contra quién quieres jugar?</h2>
 
             <button
-                class="primary"
-                onclick="start501()"
+                class="primary mode-button"
+                onclick="setupBots()"
             >
-                🎯 501
+                🤖 Contra bots
             </button>
 
             <button
-                onclick="alert('El modo Cricket estará disponible próximamente.')"
+                class="mode-button"
+                onclick="setupFriend()"
             >
-                🎯 Cricket
+                👥 Contra un amigo
             </button>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   CONFIGURAR BOTS
+===================================================== */
+
+function setupBots(){
+
+    selectedBots = [];
+
+    app.innerHTML = `
+
+        <button
+            class="back"
+            onclick="showGameType()"
+        >
+            ← Volver
+        </button>
+
+        <h1>🤖 Bots</h1>
+
+        <div class="card">
+
+            <h2>Tu jugador</h2>
+
+            <div class="player-box">
+                👤 ${safe(data.currentUser)}
+            </div>
 
         </div>
 
         <div class="card">
 
-            <h2>Jugadores</h2>
+            <h2>Elige los bots</h2>
 
-            <p>
-                👤 ${escapeHTML(data.currentUser)}
-                <span class="success"> Tú</span>
+            <p class="small">
+                Puedes añadir hasta 3 bots.
             </p>
 
             <button onclick="addBot()">
                 + Añadir bot
             </button>
 
-            <div id="botsList"></div>
+            <div id="bots"></div>
 
         </div>
 
         <button
             class="primary"
-            onclick="start501()"
+            onclick="startBotGame()"
         >
-            Empezar partida
+            🎯 Empezar partida
         </button>
 
     `;
+
+    updateBots();
 
 }
 
@@ -501,15 +599,19 @@ function addBot(){
 
     if(selectedBots.length >= 3){
 
-        alert("Puedes añadir hasta 3 bots.");
+        alert("Máximo 3 bots.");
 
         return;
+
     }
 
-    let level =
-        selectedBots.length + 1;
 
-    selectedBots.push(level);
+    selectedBots.push({
+
+        level:1
+
+    });
+
 
     updateBots();
 
@@ -522,21 +624,38 @@ function addBot(){
 
 function updateBots(){
 
+    let container =
+    document.getElementById("bots");
+
+
+    if(!container) return;
+
+
     let html = "";
 
-    selectedBots.forEach(function(level,index){
+
+    selectedBots.forEach(
+    function(bot,index){
 
         html += `
 
-            <div class="bot">
+            <div class="player-box">
 
-                🤖 Bot ${index + 1}
+                <div class="bot-level">
 
-                <br>
+                    <span>
+                        🤖 Bot ${index+1}
+                    </span>
 
-                <span class="small">
-                    Nivel ${level} / 10
-                </span>
+                    <select
+                        onchange="changeBotLevel(${index},this.value)"
+                    >
+
+                        ${createLevels(bot.level)}
+
+                    </select>
+
+                </div>
 
             </div>
 
@@ -544,18 +663,60 @@ function updateBots(){
 
     });
 
-    document.getElementById("botsList").innerHTML = html;
+
+    container.innerHTML = html;
 
 }
 
 
 /* =====================================================
-   EMPEZAR 501
+   NIVELES 1 - 10
 ===================================================== */
 
-function start501(){
+function createLevels(selected){
+
+    let html = "";
+
+    for(let i=1;i<=10;i++){
+
+        html += `
+
+            <option
+                value="${i}"
+                ${i == selected ? "selected":""}
+            >
+                Nivel ${i}
+            </option>
+
+        `;
+
+    }
+
+    return html;
+
+}
+
+
+/* =====================================================
+   CAMBIAR NIVEL
+===================================================== */
+
+function changeBotLevel(index,value){
+
+    selectedBots[index].level =
+    Number(value);
+
+}
+
+
+/* =====================================================
+   PARTIDA CONTRA BOTS
+===================================================== */
+
+function startBotGame(){
 
     let players = [];
+
 
     players.push({
 
@@ -565,35 +726,198 @@ function start501(){
 
         darts:0,
 
-        pointsScored:0,
+        points:0,
 
-        isBot:false,
+        bot:false,
 
         level:10
 
     });
 
 
-    selectedBots.forEach(function(level){
+    selectedBots.forEach(
+    function(bot,index){
 
         players.push({
 
-            name:"Bot nivel " + level,
+            name:"Bot " + (index+1),
 
             score:501,
 
             darts:0,
 
-            pointsScored:0,
+            points:0,
 
-            isBot:true,
+            bot:true,
 
-            level:level
+            level:bot.level
 
         });
 
     });
 
+
+    startGame(players);
+
+}
+
+
+/* =====================================================
+   CONTRA AMIGO
+===================================================== */
+
+function setupFriend(){
+
+    app.innerHTML = `
+
+        <button
+            class="back"
+            onclick="showGameType()"
+        >
+            ← Volver
+        </button>
+
+        <h1>👥 Contra un amigo</h1>
+
+        <div class="card">
+
+            <h2>Jugador 1</h2>
+
+            <div class="player-box">
+                👤 ${safe(data.currentUser)}
+            </div>
+
+            <h2>Jugador 2</h2>
+
+            <input
+                id="friendName"
+                placeholder="Nombre de tu amigo"
+            >
+
+        </div>
+
+        <button
+            class="primary"
+            onclick="startFriendGame()"
+        >
+            🎯 Empezar partida
+        </button>
+
+    `;
+
+}
+
+
+/* =====================================================
+   EMPEZAR PARTIDA AMIGO
+===================================================== */
+
+function startFriendGame(){
+
+    let friend =
+    document.getElementById("friendName")
+    .value
+    .trim();
+
+
+    if(!friend){
+
+        alert("Escribe el nombre del segundo jugador.");
+
+        return;
+
+    }
+
+
+    if(
+        friend.toLowerCase() ===
+        data.currentUser.toLowerCase()
+    ){
+
+        alert(
+            "El segundo jugador debe tener otro nombre."
+        );
+
+        return;
+
+    }
+
+
+    /*
+       Si el amigo no tiene cuenta,
+       se crea una cuenta local para
+       poder guardar sus estadísticas.
+    */
+
+    if(!data.users[friend]){
+
+        data.users[friend] = {
+
+            password:"",
+
+            totalPoints:0,
+
+            totalDarts:0,
+
+            matches:0,
+
+            wins:0
+
+        };
+
+    }
+
+
+    save();
+
+
+    let players = [
+
+        {
+
+            name:data.currentUser,
+
+            score:501,
+
+            darts:0,
+
+            points:0,
+
+            bot:false,
+
+            level:10
+
+        },
+
+        {
+
+            name:friend,
+
+            score:501,
+
+            darts:0,
+
+            points:0,
+
+            bot:false,
+
+            level:10
+
+        }
+
+    ];
+
+
+    startGame(players);
+
+}
+
+
+/* =====================================================
+   CREAR PARTIDA
+===================================================== */
+
+function startGame(players){
 
     game = {
 
@@ -606,6 +930,7 @@ function start501(){
         turnPoints:0
 
     };
+
 
     multiplier = 1;
 
@@ -621,9 +946,10 @@ function start501(){
 function renderGame(){
 
     let player =
-        game.players[game.current];
+    game.players[game.current];
 
-    document.getElementById("app").innerHTML = `
+
+    app.innerHTML = `
 
         <div class="top">
 
@@ -635,83 +961,89 @@ function renderGame(){
             </button>
 
             <span class="small">
-                ${game.current + 1}/${game.players.length}
+
+                ${game.current+1}/${game.players.length}
+
             </span>
 
         </div>
 
+
         <div class="card">
 
-            <div class="player-name">
-                ${escapeHTML(player.name)}
+            <div class="player">
+
+                ${safe(player.name)}
+
             </div>
 
             <div class="score">
+
                 ${player.score}
+
             </div>
 
             <div class="dart-counter">
 
-                Dardos del turno:
+                Dardos:
                 ${game.turnDarts.length}/3
 
             </div>
 
         </div>
 
+
         <div class="card">
 
-            <h3>Turno actual</h3>
+            <h3>Turno</h3>
 
             <div class="turn-darts">
 
                 ${
-                    game.turnDarts.length === 0
-
+                    game.turnDarts.length
                     ?
 
-                    "<span class='small'>Todavía no has lanzado.</span>"
-
-                    :
-
-                    game.turnDarts.map(function(d){
+                    game.turnDarts.map(
+                    function(d){
 
                         return `
-                            <span class="dart">
-                                ${d}
-                            </span>
+                        <span class="dart">
+                            ${safe(d)}
+                        </span>
                         `;
 
                     }).join("")
 
+                    :
+
+                    "<span class='small'>Sin lanzamientos</span>"
                 }
 
             </div>
 
         </div>
 
+
         <div class="card">
 
-            <h3>Puntuación</h3>
+            <h3>🎯 Puntuación</h3>
 
-            <div class="number-grid">
+            <div class="numbers">
 
-                ${generateNumbers()}
+                ${numberButtons()}
 
                 <button
                     class="bull"
-                    onclick="throwDart(25,'BULL')"
+                    onclick="throwDart(25,'BULL 25')"
                 >
-                    BULL<br>
-                    25
+                    BULL<br>25
                 </button>
 
                 <button
                     class="bull"
-                    onclick="throwDart(50,'DOBLE BULL')"
+                    onclick="throwDart(50,'DOBLE BULL 50')"
                 >
-                    DOBLE BULL<br>
-                    50
+                    DOBLE BULL<br>50
                 </button>
 
                 <button
@@ -738,15 +1070,12 @@ function renderGame(){
 
         </div>
 
-        <div class="card">
 
-            <button
-                onclick="finishTurn()"
-            >
-                Terminar turno
-            </button>
-
-        </div>
+        <button
+            onclick="finishTurn()"
+        >
+            Terminar turno
+        </button>
 
     `;
 
@@ -754,12 +1083,13 @@ function renderGame(){
 
 
 /* =====================================================
-   GENERAR NÚMEROS
+   BOTONES 1 - 20
 ===================================================== */
 
-function generateNumbers(){
+function numberButtons(){
 
     let html = "";
+
 
     for(let i=1;i<=20;i++){
 
@@ -775,6 +1105,7 @@ function generateNumbers(){
 
     }
 
+
     return html;
 
 }
@@ -788,13 +1119,14 @@ function selectMultiplier(value){
 
     multiplier = value;
 
+
     if(value === 2){
 
-        alert("DOBLE seleccionado");
+        alert("🎯 DOBLE seleccionado");
 
     }else{
 
-        alert("TRIPLE seleccionado");
+        alert("🎯 TRIPLE seleccionado");
 
     }
 
@@ -805,23 +1137,27 @@ function selectMultiplier(value){
    LANZAR DARDO
 ===================================================== */
 
-function throwDart(base, label){
+function throwDart(base,label){
 
     let player =
-        game.players[game.current];
+    game.players[game.current];
 
 
     let points = base;
 
 
     /*
-       Bull y doble Bull no utilizan
-       el multiplicador.
+       BULL y DOBLE BULL
+       no utilizan el multiplicador.
     */
 
-    if(base !== 25 && base !== 50){
+    if(
+        base !== 25 &&
+        base !== 50
+    ){
 
-        points = base * multiplier;
+        points =
+        base * multiplier;
 
     }
 
@@ -830,9 +1166,7 @@ function throwDart(base, label){
 
 
     /*
-       Reglas del 501:
-       no puedes bajar de 0
-       ni quedarte en 1.
+       Reglas del 501.
     */
 
     if(
@@ -840,7 +1174,7 @@ function throwDart(base, label){
         player.score - points === 1
     ){
 
-        alert("Puntuación no válida.");
+        alert("❌ Puntuación no válida.");
 
         return;
 
@@ -851,12 +1185,17 @@ function throwDart(base, label){
 
     player.darts++;
 
-    player.pointsScored += points;
+    player.points += points;
+
 
     game.turnDarts.push(label);
 
     game.turnPoints += points;
 
+
+    /*
+       GANADOR
+    */
 
     if(player.score === 0){
 
@@ -866,6 +1205,10 @@ function throwDart(base, label){
 
     }
 
+
+    /*
+       TRES DARDOS
+    */
 
     if(game.turnDarts.length >= 3){
 
@@ -896,7 +1239,11 @@ function finishTurn(){
 
     game.current++;
 
-    if(game.current >= game.players.length){
+
+    if(
+        game.current >=
+        game.players.length
+    ){
 
         game.current = 0;
 
@@ -904,18 +1251,15 @@ function finishTurn(){
 
 
     let next =
-        game.players[game.current];
+    game.players[game.current];
 
 
-    if(next.isBot){
+    renderGame();
 
-        renderGame();
 
-        setTimeout(botPlay,600);
+    if(next.bot){
 
-    }else{
-
-        renderGame();
+        setTimeout(botPlay,700);
 
     }
 
@@ -923,20 +1267,21 @@ function finishTurn(){
 
 
 /* =====================================================
-   JUGAR BOT
+   BOT
 ===================================================== */
 
 function botPlay(){
 
     let bot =
-        game.players[game.current];
-
-    let darts = 0;
+    game.players[game.current];
 
 
-    function botDart(){
+    let count = 0;
 
-        if(darts >= 3){
+
+    function play(){
+
+        if(count >= 3){
 
             finishTurn();
 
@@ -949,45 +1294,76 @@ function botPlay(){
 
 
         /*
-           Cuanto mayor es el nivel,
-           más probable es que consiga
-           una puntuación alta.
+           Nivel del bot.
+
+           Nivel 1 = peor
+           Nivel 10 = mejor
         */
 
+        let quality =
+        bot.level / 10;
+
+
         let random =
-            Math.random();
+        Math.random();
 
 
-        if(bot.level >= 8 && random > 0.45){
-
-            points =
-                Math.floor(Math.random()*10)+11;
-
-        }else if(bot.level >= 5 && random > 0.35){
+        if(
+            random < quality
+        ){
 
             points =
-                Math.floor(Math.random()*10)+6;
+            Math.floor(
+                Math.random()*15
+            ) + 6;
 
         }else{
 
             points =
-                Math.floor(Math.random()*10)+1;
+            Math.floor(
+                Math.random()*10
+            ) + 1;
 
         }
 
 
         /*
-           Intentar no pasarse.
+           Intentar cerrar.
         */
 
-        if(points > bot.score){
+        if(
+            bot.score <= 50 &&
+            Math.random() < quality
+        ){
+
+            if(
+                bot.score <= 20
+            ){
+
+                points =
+                bot.score;
+
+            }
+
+        }
+
+
+        /*
+           No pasarse.
+        */
+
+        if(
+            points > bot.score
+        ){
 
             points = 0;
 
         }
 
 
-        if(bot.score - points === 1){
+        if(
+            bot.score - points === 1
+        ){
 
             points = 0;
 
@@ -998,11 +1374,13 @@ function botPlay(){
 
         bot.darts++;
 
-        bot.pointsScored += points;
+        bot.points += points;
+
 
         game.turnDarts.push(points);
 
-        darts++;
+
+        count++;
 
 
         renderGame();
@@ -1017,12 +1395,12 @@ function botPlay(){
         }
 
 
-        setTimeout(botDart,500);
+        setTimeout(play,600);
 
     }
 
 
-    botDart();
+    play();
 
 }
 
@@ -1033,34 +1411,51 @@ function botPlay(){
 
 function finishGame(winner){
 
-    game.players.forEach(function(player){
+    game.players.forEach(
+    function(player){
 
-        let user =
-            data.users[player.name];
+        /*
+           Solo guardamos estadísticas
+           de jugadores con cuenta.
+        */
 
+        if(!data.users[player.name]){
 
-        if(!user){
+            data.users[player.name] = {
 
-            /*
-               Los bots no necesitan
-               cuenta permanente.
-            */
+                password:"",
 
-            return;
+                totalPoints:0,
+
+                totalDarts:0,
+
+                matches:0,
+
+                wins:0
+
+            };
 
         }
 
 
+        let user =
+        data.users[player.name];
+
+
         user.totalPoints +=
-            player.pointsScored;
+        player.points;
+
 
         user.totalDarts +=
-            player.darts;
+        player.darts;
+
 
         user.matches++;
 
 
-        if(player.name === winner.name){
+        if(
+            player.name === winner.name
+        ){
 
             user.wins++;
 
@@ -1069,25 +1464,25 @@ function finishGame(winner){
     });
 
 
-    saveData();
+    save();
 
 
-    document.getElementById("app").innerHTML = `
+    app.innerHTML = `
 
         <h1>🏆 ¡Partida terminada!</h1>
 
         <div class="card">
 
             <h2>
-                ${escapeHTML(winner.name)}
-                gana
+                ${safe(winner.name)}
             </h2>
 
             <p>
-                ¡Enhorabuena!
+                ¡Ha ganado la partida!
             </p>
 
         </div>
+
 
         <button
             class="primary"
@@ -1096,8 +1491,11 @@ function finishGame(winner){
             🏆 Ver ranking
         </button>
 
-        <button onclick="showHome()">
-            Inicio
+
+        <button
+            onclick="showHome()"
+        >
+            🏠 Volver al inicio
         </button>
 
     `;
@@ -1112,7 +1510,7 @@ function finishGame(winner){
 function getAverage(name){
 
     let user =
-        data.users[name];
+    data.users[name];
 
 
     if(
@@ -1125,15 +1523,10 @@ function getAverage(name){
     }
 
 
-    /*
-       Media de 3 dardos.
-    */
-
     return (
         user.totalPoints /
-        user.totalDarts *
-        3
-    );
+        user.totalDarts
+    ) * 3;
 
 }
 
@@ -1145,13 +1538,16 @@ function getAverage(name){
 function showRanking(){
 
     let players =
-        Object.keys(data.users);
+    Object.keys(data.users);
 
 
-    players.sort(function(a,b){
+    players.sort(
+    function(a,b){
 
-        return getAverage(b) -
-               getAverage(a);
+        return (
+            getAverage(b) -
+            getAverage(a)
+        );
 
     });
 
@@ -1183,31 +1579,25 @@ function showRanking(){
     }
 
 
-    players.forEach(function(name,index){
-
-        let user =
-            data.users[name];
-
+    players.forEach(
+    function(name,index){
 
         html += `
 
-            <div class="rank-row">
+            <div class="ranking-row">
 
-                <div>
+                <span>
 
-                    <span class="rank-position">
-                        ${index + 1}.
-                    </span>
+                    ${index+1}.
+                    ${safe(name)}
 
-                    ${escapeHTML(name)}
+                </span>
 
-                </div>
-
-                <div class="rank-average">
+                <strong>
 
                     ${getAverage(name).toFixed(2)}
 
-                </div>
+                </strong>
 
             </div>
 
@@ -1221,14 +1611,13 @@ function showRanking(){
         </div>
 
         <p class="small">
-            La media es puntos por 3 dardos.
+            Ranking ordenado por media de 3 dardos.
         </p>
 
     `;
 
 
-    document.getElementById("app").innerHTML =
-        html;
+    app.innerHTML = html;
 
 }
 
@@ -1240,14 +1629,14 @@ function showRanking(){
 function showAccount(){
 
     let name =
-        data.currentUser;
+    data.currentUser;
 
 
     let user =
-        data.users[name];
+    data.users[name];
 
 
-    document.getElementById("app").innerHTML = `
+    app.innerHTML = `
 
         <button
             class="back"
@@ -1261,46 +1650,53 @@ function showAccount(){
         <div class="card">
 
             <h2>
-                ${escapeHTML(name)}
+                ${safe(name)}
             </h2>
 
-            <div class="stat">
+            <div class="stats">
 
-                <span>Media</span>
+                <div class="stat">
 
-                <strong>
-                    ${getAverage(name).toFixed(2)}
-                </strong>
+                    <span>Media</span>
 
-            </div>
+                    <strong>
+                        ${getAverage(name).toFixed(2)}
+                    </strong>
 
-            <div class="stat">
+                </div>
 
-                <span>Partidas</span>
 
-                <strong>
-                    ${user.matches}
-                </strong>
+                <div class="stat">
 
-            </div>
+                    <span>Partidas</span>
 
-            <div class="stat">
+                    <strong>
+                        ${user.matches}
+                    </strong>
 
-                <span>Victorias</span>
+                </div>
 
-                <strong>
-                    ${user.wins}
-                </strong>
 
-            </div>
+                <div class="stat">
 
-            <div class="stat">
+                    <span>Victorias</span>
 
-                <span>Dardos</span>
+                    <strong>
+                        ${user.wins}
+                    </strong>
 
-                <strong>
-                    ${user.totalDarts}
-                </strong>
+                </div>
+
+
+                <div class="stat">
+
+                    <span>Dardos</span>
+
+                    <strong>
+                        ${user.totalDarts}
+                    </strong>
+
+                </div>
 
             </div>
 
@@ -1319,7 +1715,7 @@ function leaveGame(){
 
     if(
         confirm(
-            "¿Seguro que quieres salir de la partida?"
+            "¿Quieres salir de la partida?"
         )
     ){
 
@@ -1340,7 +1736,7 @@ function logout(){
 
     data.currentUser = null;
 
-    saveData();
+    save();
 
     showLogin();
 
