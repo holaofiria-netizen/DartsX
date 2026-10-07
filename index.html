@@ -3,1757 +3,1114 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DartsX 🎯</title>
+<title>DartsX</title>
 
 <style>
-*{box-sizing:border-box}
-
-body{
-    margin:0;
-    background:#0d1117;
-    color:white;
-    font-family:Arial,sans-serif;
+*{box-sizing:border-box;font-family:Arial,sans-serif}
+body{margin:0;background:#111;color:white}
+.screen{display:none;min-height:100vh;padding:20px}
+.active{display:block}
+.card{max-width:500px;margin:30px auto;background:#1d1d1d;padding:25px;border-radius:18px}
+h1,h2,h3{text-align:center}
+.logo{text-align:center;font-size:48px;font-weight:bold;margin:20px}
+input{width:100%;padding:14px;margin:7px 0;border:0;border-radius:10px;background:#303030;color:white;font-size:16px}
+button{cursor:pointer}
+.main,.secondary,.pass{width:100%;padding:15px;margin-top:10px;border:0;border-radius:10px;font-size:18px;font-weight:bold}
+.main,.pass{background:#e63946;color:white}
+.secondary{background:#333;color:white;font-size:16px}
+.message{text-align:center;min-height:25px;margin:10px}
+.error{color:#ff5555}
+.success{color:#55dd77}
+.bot-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.bot{padding:18px 5px;border:0;border-radius:12px;background:#292929;color:white;font-size:17px}
+.bot.selected{background:#e63946}
+.scores{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.player-box{background:#202020;border-radius:15px;padding:15px;text-align:center}
+.player-box.active-player{border:3px solid #e63946}
+.score{font-size:55px;font-weight:bold;margin:10px}
+.average{color:#aaa}
+.turn-info{text-align:center;margin:15px;font-size:20px}
+.dart-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.dart-grid button{padding:13px 3px;border:0;border-radius:8px;background:#333;color:white;font-size:14px}
+.double{background:#126b45!important}
+.triple{background:#7c2424!important}
+.bull{background:#795000!important}
+.turn-darts{text-align:center;margin:15px;font-size:18px}
+.checkout{background:#172d1f;padding:12px;border-radius:10px;margin-top:10px;text-align:center}
+.hidden{display:none!important}
+.stats{background:#222;padding:15px;margin:10px 0;border-radius:10px}
+.ranking-item{padding:12px;border-bottom:1px solid #444}
+@media(max-width:500px){
+.score{font-size:40px}
+.dart-grid button{font-size:12px;padding:12px 2px}
 }
-
-#app{
-    max-width:650px;
-    margin:auto;
-    min-height:100vh;
-    padding:20px;
-}
-
-h1{
-    font-size:42px;
-    margin:10px 0;
-}
-
-h2{
-    margin-top:5px;
-}
-
-.card{
-    background:#171d27;
-    padding:20px;
-    border-radius:20px;
-    margin:15px 0;
-}
-
-input,select{
-    width:100%;
-    padding:14px;
-    margin:6px 0;
-    border-radius:12px;
-    border:1px solid #394352;
-    background:#0d121a;
-    color:white;
-    font-size:16px;
-}
-
-button{
-    width:100%;
-    padding:14px;
-    margin:6px 0;
-    border:0;
-    border-radius:13px;
-    background:#293241;
-    color:white;
-    font-size:16px;
-    font-weight:bold;
-}
-
-button:hover{
-    opacity:.85;
-}
-
-.primary{
-    background:white;
-    color:#111;
-}
-
-.danger{
-    background:#713b43;
-}
-
-.back{
-    background:transparent;
-    text-align:left;
-    width:auto;
-}
-
-.small{
-    color:#9da8b8;
-    font-size:14px;
-}
-
-.score{
-    font-size:72px;
-    text-align:center;
-    font-weight:900;
-    margin:20px 0;
-}
-
-.player{
-    text-align:center;
-    color:#aeb8c8;
-    font-size:20px;
-}
-
-.dart-counter{
-    text-align:center;
-    color:#9da8b8;
-}
-
-.numbers{
-    display:grid;
-    grid-template-columns:repeat(5,1fr);
-    gap:6px;
-}
-
-.numbers button{
-    margin:0;
-    padding:13px 3px;
-}
-
-.bull{
-    background:#56677e;
-}
-
-.special{
-    background:#39485c;
-}
-
-.players-list{
-    margin-top:10px;
-}
-
-.player-box{
-    background:#202734;
-    padding:13px;
-    border-radius:12px;
-    margin:7px 0;
-}
-
-.turn-darts{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-}
-
-.dart{
-    background:#293241;
-    padding:10px 15px;
-    border-radius:10px;
-}
-
-.ranking-row{
-    display:flex;
-    justify-content:space-between;
-    padding:14px 5px;
-    border-bottom:1px solid #303846;
-}
-
-.stats{
-    display:grid;
-    gap:8px;
-}
-
-.stat{
-    background:#202734;
-    padding:15px;
-    border-radius:12px;
-    display:flex;
-    justify-content:space-between;
-}
-
-.hidden{
-    display:none;
-}
-
-.mode-button{
-    padding:18px;
-    font-size:18px;
-}
-
-.selected{
-    outline:3px solid white;
-}
-
-.bot-level{
-    display:flex;
-    align-items:center;
-    gap:8px;
-}
-
-.bot-level select{
-    margin:0;
-}
-
 </style>
 </head>
 
 <body>
 
-<div id="app"></div>
+<!-- LOGIN -->
+<div id="loginScreen" class="screen active">
+<div class="card">
+
+<div class="logo">🎯 DartsX</div>
+<h2>Iniciar sesión</h2>
+
+<input id="loginUser" placeholder="Usuario">
+<input id="loginPass" type="password" placeholder="Contraseña">
+
+<button class="main" onclick="login()">INICIAR SESIÓN</button>
+<button class="secondary" onclick="showScreen('registerScreen')">REGISTRARSE</button>
+
+<div id="loginMessage" class="message"></div>
+
+</div>
+</div>
+
+<!-- REGISTRO -->
+<div id="registerScreen" class="screen">
+<div class="card">
+
+<div class="logo">🎯 DartsX</div>
+<h2>Crear cuenta</h2>
+
+<input id="registerUser" placeholder="Nombre de usuario">
+<input id="registerPass" type="password" placeholder="Contraseña">
+<input id="registerPass2" type="password" placeholder="Repetir contraseña">
+
+<button class="main" onclick="register()">CREAR CUENTA</button>
+<button class="secondary" onclick="showScreen('loginScreen')">VOLVER</button>
+
+<div id="registerMessage" class="message"></div>
+
+</div>
+</div>
+
+<!-- MENU -->
+<div id="menuScreen" class="screen">
+<div class="card">
+
+<div class="logo">🎯 DartsX</div>
+
+<h2>Hola, <span id="menuUsername"></span></h2>
+
+<button class="main" onclick="showBotSelection()">🎯 PARTIDA</button>
+<button class="main" onclick="showAccount()">👤 MI CUENTA</button>
+<button class="secondary" onclick="logout()">CERRAR SESIÓN</button>
+
+</div>
+</div>
+
+<!-- BOTS -->
+<div id="botScreen" class="screen">
+<div class="card">
+
+<h1>Elige tu rival</h1>
+
+<div class="bot-grid" id="botGrid"></div>
+
+<button class="main" onclick="startGame()">EMPEZAR PARTIDA</button>
+<button class="secondary" onclick="showScreen('menuScreen')">VOLVER</button>
+
+</div>
+</div>
+
+<!-- PARTIDA -->
+<div id="gameScreen" class="screen">
+<div class="game-board">
+
+<h1>🎯 DartsX</h1>
+
+<div class="turn-info">
+<b id="roundText">Ronda 1</b><br>
+<span id="turnText">Tu turno</span>
+</div>
+
+<div class="scores">
+
+<div id="playerBox" class="player-box active-player">
+<h3 id="playerName">Jugador</h3>
+<div id="playerScoreDisplay" class="score">501</div>
+<div class="average">Media: <span id="playerAverage">0.00</span></div>
+</div>
+
+<div id="botBox" class="player-box">
+<h3 id="botName">Bot</h3>
+<div id="botScoreDisplay" class="score">501</div>
+<div class="average">Media: <span id="botAverage">0.00</span></div>
+</div>
+
+</div>
+
+<div class="turn-darts">
+<span id="dartCounter">Dardos: 0 / 3</span><br>
+<span id="turnScoreText">Puntos de ronda: 0</span>
+</div>
+
+<div id="checkoutBox" class="checkout hidden"></div>
+
+<h3>Simple</h3>
+<div class="dart-grid" id="singleButtons"></div>
+
+<h3>Doble</h3>
+<div class="dart-grid" id="doubleButtons"></div>
+
+<h3>Triple</h3>
+<div class="dart-grid" id="tripleButtons"></div>
+
+<h3>Bull</h3>
+
+<div class="dart-grid">
+
+<button class="bull" onclick="throwDart(25,'SBull')">
+SBull<br>25
+</button>
+
+<button class="bull" onclick="throwDart(50,'DBull')">
+DBull<br>50
+</button>
+
+</div>
+
+<button id="passButton" class="pass hidden" onclick="passRound()">
+PASAR DE RONDA
+</button>
+
+<button class="secondary" onclick="confirmExitGame()">
+SALIR DE PARTIDA
+</button>
+
+<div id="gameMessage" class="message"></div>
+
+</div>
+</div>
+
+<!-- CUENTA -->
+<div id="accountScreen" class="screen">
+<div class="card">
+
+<h1>👤 Mi cuenta</h1>
+
+<div class="stats">
+<b>Usuario:</b> <span id="accountUsername"></span>
+</div>
+
+<div class="stats">
+<b>Partidas jugadas:</b> <span id="gamesPlayed"></span>
+</div>
+
+<div class="stats">
+<b>Victorias:</b> <span id="victories"></span>
+</div>
+
+<div class="stats">
+<b>Derrotas:</b> <span id="defeats"></span>
+</div>
+
+<div class="stats">
+<b>Media:</b> <span id="accountAverage"></span>
+</div>
+
+<h2>🏆 Ranking</h2>
+
+<div id="ranking"></div>
+
+<button class="secondary" onclick="showScreen('menuScreen')">
+VOLVER
+</button>
+
+</div>
+</div>
 
 <script>
 
-/* =====================================================
-   DATOS
-===================================================== */
+/* =========================
+   VARIABLES
+========================= */
 
-const STORAGE_KEY = "DARTSX_COMPLETO";
-
-let data =
-JSON.parse(localStorage.getItem(STORAGE_KEY))
-||
-{
-    users:{},
-    currentUser:null
+const botLevels={
+1:20,
+2:30,
+3:45,
+4:50,
+5:65,
+6:70,
+7:75,
+8:80,
+9:90,
+10:120
 };
 
-let game = null;
+let currentUser=null;
+let selectedBot=1;
 
-let selectedBots = [];
+let playerScore=501;
+let botScore=501;
 
-let multiplier = 1;
+let round=1;
+let turn="player";
 
+let turnScore=0;
+let turnDarts=0;
 
-/* =====================================================
-   GUARDAR
-===================================================== */
+let playerTotalPoints=0;
+let playerTotalDarts=0;
 
-function save(){
+let botTotalPoints=0;
+let botTotalDarts=0;
 
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(data)
-    );
+let gameFinished=false;
 
-}
+/* =========================
+   PANTALLAS
+========================= */
 
+function showScreen(id){
 
-/* =====================================================
-   ESCAPAR TEXTO
-===================================================== */
+document.querySelectorAll(".screen").forEach(s=>{
+s.classList.remove("active");
+});
 
-function safe(text){
-
-    return String(text)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+document.getElementById(id).classList.add("active");
 
 }
 
+/* =========================
+   USUARIOS
+========================= */
 
-/* =====================================================
-   PANTALLA LOGIN
-===================================================== */
-
-function showLogin(){
-
-    app.innerHTML = `
-
-        <h1>DartsX 🎯</h1>
-
-        <p class="small">
-            Marcador de dardos 501
-        </p>
-
-        <div class="card">
-
-            <h2>🔐 Iniciar sesión</h2>
-
-            <input
-                id="loginName"
-                placeholder="Nombre"
-            >
-
-            <input
-                id="loginPassword"
-                type="password"
-                placeholder="Contraseña"
-            >
-
-            <button
-                class="primary"
-                onclick="login()"
-            >
-                Iniciar sesión
-            </button>
-
-        </div>
-
-        <div class="card">
-
-            <h2>📝 Registrarse</h2>
-
-            <input
-                id="registerName"
-                placeholder="Crea tu nombre"
-            >
-
-            <input
-                id="registerPassword"
-                type="password"
-                placeholder="Crea tu contraseña"
-            >
-
-            <input
-                id="registerPassword2"
-                type="password"
-                placeholder="Repite la contraseña"
-            >
-
-            <button onclick="register()">
-                Crear cuenta
-            </button>
-
-        </div>
-
-    `;
-
+function getUsers(){
+return JSON.parse(localStorage.getItem("dartsX_users")||"{}");
 }
 
-
-/* =====================================================
-   REGISTRO
-===================================================== */
+function saveUsers(users){
+localStorage.setItem("dartsX_users",JSON.stringify(users));
+}
 
 function register(){
 
-    let name =
-    document.getElementById("registerName")
-    .value
-    .trim();
+const username=document.getElementById("registerUser").value.trim();
+const password=document.getElementById("registerPass").value;
+const password2=document.getElementById("registerPass2").value;
 
-    let password =
-    document.getElementById("registerPassword")
-    .value;
+const message=document.getElementById("registerMessage");
 
-    let password2 =
-    document.getElementById("registerPassword2")
-    .value;
+if(!username||!password){
 
-
-    if(!name || !password){
-
-        alert("Completa todos los campos.");
-
-        return;
-
-    }
-
-
-    if(password !== password2){
-
-        alert("Las contraseñas no coinciden.");
-
-        return;
-
-    }
-
-
-    if(password.length < 4){
-
-        alert(
-            "La contraseña debe tener al menos 4 caracteres."
-        );
-
-        return;
-
-    }
-
-
-    if(data.users[name]){
-
-        alert("Ese nombre ya está registrado.");
-
-        return;
-
-    }
-
-
-    data.users[name] = {
-
-        password:password,
-
-        totalPoints:0,
-
-        totalDarts:0,
-
-        matches:0,
-
-        wins:0
-
-    };
-
-
-    data.currentUser = name;
-
-    save();
-
-    showHome();
+message.textContent="Rellena todos los campos.";
+message.className="message error";
+return;
 
 }
 
+if(password!==password2){
 
-/* =====================================================
-   LOGIN
-===================================================== */
+message.textContent="Las contraseñas no coinciden.";
+message.className="message error";
+return;
+
+}
+
+const users=getUsers();
+
+if(users[username]){
+
+message.textContent="Ese usuario ya existe.";
+message.className="message error";
+return;
+
+}
+
+users[username]={
+password:password,
+games:0,
+wins:0,
+losses:0,
+totalPoints:0,
+totalDarts:0
+};
+
+saveUsers(users);
+
+message.textContent="Cuenta creada correctamente.";
+message.className="message success";
+
+setTimeout(()=>{
+showScreen("loginScreen");
+},700);
+
+}
 
 function login(){
 
-    let name =
-    document.getElementById("loginName")
-    .value
-    .trim();
+const username=document.getElementById("loginUser").value.trim();
+const password=document.getElementById("loginPass").value;
 
-    let password =
-    document.getElementById("loginPassword")
-    .value;
+const users=getUsers();
 
+if(!users[username]||users[username].password!==password){
 
-    if(!data.users[name]){
+document.getElementById("loginMessage").textContent=
+"Usuario o contraseña incorrectos.";
 
-        alert("El usuario no existe.");
+document.getElementById("loginMessage").className=
+"message error";
 
-        return;
-
-    }
-
-
-    if(
-        data.users[name].password !==
-        password
-    ){
-
-        alert("Contraseña incorrecta.");
-
-        return;
-
-    }
-
-
-    data.currentUser = name;
-
-    save();
-
-    showHome();
+return;
 
 }
 
+currentUser=username;
 
-/* =====================================================
-   HOME
-===================================================== */
+localStorage.setItem("dartsX_currentUser",username);
 
-function showHome(){
+document.getElementById("menuUsername").textContent=username;
 
-    let name = data.currentUser;
-
-
-    app.innerHTML = `
-
-        <h1>DartsX 🎯</h1>
-
-        <p class="small">
-            Bienvenido, ${safe(name)}
-        </p>
-
-        <button
-            class="primary"
-            onclick="showGameType()"
-        >
-            🎯 Nueva partida
-        </button>
-
-        <button onclick="showRanking()">
-            🏆 Ranking
-        </button>
-
-        <button onclick="showAccount()">
-            👤 Mi cuenta
-        </button>
-
-        <button
-            class="danger"
-            onclick="logout()"
-        >
-            Cerrar sesión
-        </button>
-
-    `;
+showScreen("menuScreen");
 
 }
-
-
-/* =====================================================
-   ELEGIR TIPO DE PARTIDA
-===================================================== */
-
-function showGameType(){
-
-    app.innerHTML = `
-
-        <button
-            class="back"
-            onclick="showHome()"
-        >
-            ← Volver
-        </button>
-
-        <h1>Nueva partida</h1>
-
-        <div class="card">
-
-            <h2>¿Contra quién quieres jugar?</h2>
-
-            <button
-                class="primary mode-button"
-                onclick="setupBots()"
-            >
-                🤖 Contra bots
-            </button>
-
-            <button
-                class="mode-button"
-                onclick="setupFriend()"
-            >
-                👥 Contra un amigo
-            </button>
-
-        </div>
-
-    `;
-
-}
-
-
-/* =====================================================
-   CONFIGURAR BOTS
-===================================================== */
-
-function setupBots(){
-
-    selectedBots = [];
-
-    app.innerHTML = `
-
-        <button
-            class="back"
-            onclick="showGameType()"
-        >
-            ← Volver
-        </button>
-
-        <h1>🤖 Bots</h1>
-
-        <div class="card">
-
-            <h2>Tu jugador</h2>
-
-            <div class="player-box">
-                👤 ${safe(data.currentUser)}
-            </div>
-
-        </div>
-
-        <div class="card">
-
-            <h2>Elige los bots</h2>
-
-            <p class="small">
-                Puedes añadir hasta 3 bots.
-            </p>
-
-            <button onclick="addBot()">
-                + Añadir bot
-            </button>
-
-            <div id="bots"></div>
-
-        </div>
-
-        <button
-            class="primary"
-            onclick="startBotGame()"
-        >
-            🎯 Empezar partida
-        </button>
-
-    `;
-
-    updateBots();
-
-}
-
-
-/* =====================================================
-   AÑADIR BOT
-===================================================== */
-
-function addBot(){
-
-    if(selectedBots.length >= 3){
-
-        alert("Máximo 3 bots.");
-
-        return;
-
-    }
-
-
-    selectedBots.push({
-
-        level:1
-
-    });
-
-
-    updateBots();
-
-}
-
-
-/* =====================================================
-   MOSTRAR BOTS
-===================================================== */
-
-function updateBots(){
-
-    let container =
-    document.getElementById("bots");
-
-
-    if(!container) return;
-
-
-    let html = "";
-
-
-    selectedBots.forEach(
-    function(bot,index){
-
-        html += `
-
-            <div class="player-box">
-
-                <div class="bot-level">
-
-                    <span>
-                        🤖 Bot ${index+1}
-                    </span>
-
-                    <select
-                        onchange="changeBotLevel(${index},this.value)"
-                    >
-
-                        ${createLevels(bot.level)}
-
-                    </select>
-
-                </div>
-
-            </div>
-
-        `;
-
-    });
-
-
-    container.innerHTML = html;
-
-}
-
-
-/* =====================================================
-   NIVELES 1 - 10
-===================================================== */
-
-function createLevels(selected){
-
-    let html = "";
-
-    for(let i=1;i<=10;i++){
-
-        html += `
-
-            <option
-                value="${i}"
-                ${i == selected ? "selected":""}
-            >
-                Nivel ${i}
-            </option>
-
-        `;
-
-    }
-
-    return html;
-
-}
-
-
-/* =====================================================
-   CAMBIAR NIVEL
-===================================================== */
-
-function changeBotLevel(index,value){
-
-    selectedBots[index].level =
-    Number(value);
-
-}
-
-
-/* =====================================================
-   PARTIDA CONTRA BOTS
-===================================================== */
-
-function startBotGame(){
-
-    let players = [];
-
-
-    players.push({
-
-        name:data.currentUser,
-
-        score:501,
-
-        darts:0,
-
-        points:0,
-
-        bot:false,
-
-        level:10
-
-    });
-
-
-    selectedBots.forEach(
-    function(bot,index){
-
-        players.push({
-
-            name:"Bot " + (index+1),
-
-            score:501,
-
-            darts:0,
-
-            points:0,
-
-            bot:true,
-
-            level:bot.level
-
-        });
-
-    });
-
-
-    startGame(players);
-
-}
-
-
-/* =====================================================
-   CONTRA AMIGO
-===================================================== */
-
-function setupFriend(){
-
-    app.innerHTML = `
-
-        <button
-            class="back"
-            onclick="showGameType()"
-        >
-            ← Volver
-        </button>
-
-        <h1>👥 Contra un amigo</h1>
-
-        <div class="card">
-
-            <h2>Jugador 1</h2>
-
-            <div class="player-box">
-                👤 ${safe(data.currentUser)}
-            </div>
-
-            <h2>Jugador 2</h2>
-
-            <input
-                id="friendName"
-                placeholder="Nombre de tu amigo"
-            >
-
-        </div>
-
-        <button
-            class="primary"
-            onclick="startFriendGame()"
-        >
-            🎯 Empezar partida
-        </button>
-
-    `;
-
-}
-
-
-/* =====================================================
-   EMPEZAR PARTIDA AMIGO
-===================================================== */
-
-function startFriendGame(){
-
-    let friend =
-    document.getElementById("friendName")
-    .value
-    .trim();
-
-
-    if(!friend){
-
-        alert("Escribe el nombre del segundo jugador.");
-
-        return;
-
-    }
-
-
-    if(
-        friend.toLowerCase() ===
-        data.currentUser.toLowerCase()
-    ){
-
-        alert(
-            "El segundo jugador debe tener otro nombre."
-        );
-
-        return;
-
-    }
-
-
-    /*
-       Si el amigo no tiene cuenta,
-       se crea una cuenta local para
-       poder guardar sus estadísticas.
-    */
-
-    if(!data.users[friend]){
-
-        data.users[friend] = {
-
-            password:"",
-
-            totalPoints:0,
-
-            totalDarts:0,
-
-            matches:0,
-
-            wins:0
-
-        };
-
-    }
-
-
-    save();
-
-
-    let players = [
-
-        {
-
-            name:data.currentUser,
-
-            score:501,
-
-            darts:0,
-
-            points:0,
-
-            bot:false,
-
-            level:10
-
-        },
-
-        {
-
-            name:friend,
-
-            score:501,
-
-            darts:0,
-
-            points:0,
-
-            bot:false,
-
-            level:10
-
-        }
-
-    ];
-
-
-    startGame(players);
-
-}
-
-
-/* =====================================================
-   CREAR PARTIDA
-===================================================== */
-
-function startGame(players){
-
-    game = {
-
-        players:players,
-
-        current:0,
-
-        turnDarts:[],
-
-        turnPoints:0
-
-    };
-
-
-    multiplier = 1;
-
-    renderGame();
-
-}
-
-
-/* =====================================================
-   MOSTRAR PARTIDA
-===================================================== */
-
-function renderGame(){
-
-    let player =
-    game.players[game.current];
-
-
-    app.innerHTML = `
-
-        <div class="top">
-
-            <button
-                class="back"
-                onclick="leaveGame()"
-            >
-                ← Salir
-            </button>
-
-            <span class="small">
-
-                ${game.current+1}/${game.players.length}
-
-            </span>
-
-        </div>
-
-
-        <div class="card">
-
-            <div class="player">
-
-                ${safe(player.name)}
-
-            </div>
-
-            <div class="score">
-
-                ${player.score}
-
-            </div>
-
-            <div class="dart-counter">
-
-                Dardos:
-                ${game.turnDarts.length}/3
-
-            </div>
-
-        </div>
-
-
-        <div class="card">
-
-            <h3>Turno</h3>
-
-            <div class="turn-darts">
-
-                ${
-                    game.turnDarts.length
-                    ?
-
-                    game.turnDarts.map(
-                    function(d){
-
-                        return `
-                        <span class="dart">
-                            ${safe(d)}
-                        </span>
-                        `;
-
-                    }).join("")
-
-                    :
-
-                    "<span class='small'>Sin lanzamientos</span>"
-                }
-
-            </div>
-
-        </div>
-
-
-        <div class="card">
-
-            <h3>🎯 Puntuación</h3>
-
-            <div class="numbers">
-
-                ${numberButtons()}
-
-                <button
-                    class="bull"
-                    onclick="throwDart(25,'BULL 25')"
-                >
-                    BULL<br>25
-                </button>
-
-                <button
-                    class="bull"
-                    onclick="throwDart(50,'DOBLE BULL 50')"
-                >
-                    DOBLE BULL<br>50
-                </button>
-
-                <button
-                    class="special"
-                    onclick="selectMultiplier(2)"
-                >
-                    DOBLE
-                </button>
-
-                <button
-                    class="special"
-                    onclick="selectMultiplier(3)"
-                >
-                    TRIPLE
-                </button>
-
-                <button
-                    onclick="throwDart(0,'MISS')"
-                >
-                    MISS
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <button
-            onclick="finishTurn()"
-        >
-            Terminar turno
-        </button>
-
-    `;
-
-}
-
-
-/* =====================================================
-   BOTONES 1 - 20
-===================================================== */
-
-function numberButtons(){
-
-    let html = "";
-
-
-    for(let i=1;i<=20;i++){
-
-        html += `
-
-            <button
-                onclick="throwDart(${i},'${i}')"
-            >
-                ${i}
-            </button>
-
-        `;
-
-    }
-
-
-    return html;
-
-}
-
-
-/* =====================================================
-   MULTIPLICADOR
-===================================================== */
-
-function selectMultiplier(value){
-
-    multiplier = value;
-
-
-    if(value === 2){
-
-        alert("🎯 DOBLE seleccionado");
-
-    }else{
-
-        alert("🎯 TRIPLE seleccionado");
-
-    }
-
-}
-
-
-/* =====================================================
-   LANZAR DARDO
-===================================================== */
-
-function throwDart(base,label){
-
-    let player =
-    game.players[game.current];
-
-
-    let points = base;
-
-
-    /*
-       BULL y DOBLE BULL
-       no utilizan el multiplicador.
-    */
-
-    if(
-        base !== 25 &&
-        base !== 50
-    ){
-
-        points =
-        base * multiplier;
-
-    }
-
-
-    multiplier = 1;
-
-
-    /*
-       Reglas del 501.
-    */
-
-    if(
-        points > player.score ||
-        player.score - points === 1
-    ){
-
-        alert("❌ Puntuación no válida.");
-
-        return;
-
-    }
-
-
-    player.score -= points;
-
-    player.darts++;
-
-    player.points += points;
-
-
-    game.turnDarts.push(label);
-
-    game.turnPoints += points;
-
-
-    /*
-       GANADOR
-    */
-
-    if(player.score === 0){
-
-        finishGame(player);
-
-        return;
-
-    }
-
-
-    /*
-       TRES DARDOS
-    */
-
-    if(game.turnDarts.length >= 3){
-
-        finishTurn();
-
-        return;
-
-    }
-
-
-    renderGame();
-
-}
-
-
-/* =====================================================
-   TERMINAR TURNO
-===================================================== */
-
-function finishTurn(){
-
-    game.turnDarts = [];
-
-    game.turnPoints = 0;
-
-    multiplier = 1;
-
-
-    game.current++;
-
-
-    if(
-        game.current >=
-        game.players.length
-    ){
-
-        game.current = 0;
-
-    }
-
-
-    let next =
-    game.players[game.current];
-
-
-    renderGame();
-
-
-    if(next.bot){
-
-        setTimeout(botPlay,700);
-
-    }
-
-}
-
-
-/* =====================================================
-   BOT
-===================================================== */
-
-function botPlay(){
-
-    let bot =
-    game.players[game.current];
-
-
-    let count = 0;
-
-
-    function play(){
-
-        if(count >= 3){
-
-            finishTurn();
-
-            return;
-
-        }
-
-
-        let points;
-
-
-        /*
-           Nivel del bot.
-
-           Nivel 1 = peor
-           Nivel 10 = mejor
-        */
-
-        let quality =
-        bot.level / 10;
-
-
-        let random =
-        Math.random();
-
-
-        if(
-            random < quality
-        ){
-
-            points =
-            Math.floor(
-                Math.random()*15
-            ) + 6;
-
-        }else{
-
-            points =
-            Math.floor(
-                Math.random()*10
-            ) + 1;
-
-        }
-
-
-        /*
-           Intentar cerrar.
-        */
-
-        if(
-            bot.score <= 50 &&
-            Math.random() < quality
-        ){
-
-            if(
-                bot.score <= 20
-            ){
-
-                points =
-                bot.score;
-
-            }
-
-        }
-
-
-        /*
-           No pasarse.
-        */
-
-        if(
-            points > bot.score
-        ){
-
-            points = 0;
-
-        }
-
-
-        if(
-            bot.score - points === 1
-        ){
-
-            points = 0;
-
-        }
-
-
-        bot.score -= points;
-
-        bot.darts++;
-
-        bot.points += points;
-
-
-        game.turnDarts.push(points);
-
-
-        count++;
-
-
-        renderGame();
-
-
-        if(bot.score === 0){
-
-            finishGame(bot);
-
-            return;
-
-        }
-
-
-        setTimeout(play,600);
-
-    }
-
-
-    play();
-
-}
-
-
-/* =====================================================
-   TERMINAR PARTIDA
-===================================================== */
-
-function finishGame(winner){
-
-    game.players.forEach(
-    function(player){
-
-        /*
-           Solo guardamos estadísticas
-           de jugadores con cuenta.
-        */
-
-        if(!data.users[player.name]){
-
-            data.users[player.name] = {
-
-                password:"",
-
-                totalPoints:0,
-
-                totalDarts:0,
-
-                matches:0,
-
-                wins:0
-
-            };
-
-        }
-
-
-        let user =
-        data.users[player.name];
-
-
-        user.totalPoints +=
-        player.points;
-
-
-        user.totalDarts +=
-        player.darts;
-
-
-        user.matches++;
-
-
-        if(
-            player.name === winner.name
-        ){
-
-            user.wins++;
-
-        }
-
-    });
-
-
-    save();
-
-
-    app.innerHTML = `
-
-        <h1>🏆 ¡Partida terminada!</h1>
-
-        <div class="card">
-
-            <h2>
-                ${safe(winner.name)}
-            </h2>
-
-            <p>
-                ¡Ha ganado la partida!
-            </p>
-
-        </div>
-
-
-        <button
-            class="primary"
-            onclick="showRanking()"
-        >
-            🏆 Ver ranking
-        </button>
-
-
-        <button
-            onclick="showHome()"
-        >
-            🏠 Volver al inicio
-        </button>
-
-    `;
-
-}
-
-
-/* =====================================================
-   MEDIA
-===================================================== */
-
-function getAverage(name){
-
-    let user =
-    data.users[name];
-
-
-    if(
-        !user ||
-        user.totalDarts === 0
-    ){
-
-        return 0;
-
-    }
-
-
-    return (
-        user.totalPoints /
-        user.totalDarts
-    ) * 3;
-
-}
-
-
-/* =====================================================
-   RANKING
-===================================================== */
-
-function showRanking(){
-
-    let players =
-    Object.keys(data.users);
-
-
-    players.sort(
-    function(a,b){
-
-        return (
-            getAverage(b) -
-            getAverage(a)
-        );
-
-    });
-
-
-    let html = `
-
-        <button
-            class="back"
-            onclick="showHome()"
-        >
-            ← Volver
-        </button>
-
-        <h1>🏆 Ranking</h1>
-
-        <div class="card">
-
-    `;
-
-
-    if(players.length === 0){
-
-        html += `
-            <p class="small">
-                Todavía no hay jugadores.
-            </p>
-        `;
-
-    }
-
-
-    players.forEach(
-    function(name,index){
-
-        html += `
-
-            <div class="ranking-row">
-
-                <span>
-
-                    ${index+1}.
-                    ${safe(name)}
-
-                </span>
-
-                <strong>
-
-                    ${getAverage(name).toFixed(2)}
-
-                </strong>
-
-            </div>
-
-        `;
-
-    });
-
-
-    html += `
-
-        </div>
-
-        <p class="small">
-            Ranking ordenado por media de 3 dardos.
-        </p>
-
-    `;
-
-
-    app.innerHTML = html;
-
-}
-
-
-/* =====================================================
-   MI CUENTA
-===================================================== */
-
-function showAccount(){
-
-    let name =
-    data.currentUser;
-
-
-    let user =
-    data.users[name];
-
-
-    app.innerHTML = `
-
-        <button
-            class="back"
-            onclick="showHome()"
-        >
-            ← Volver
-        </button>
-
-        <h1>👤 Mi cuenta</h1>
-
-        <div class="card">
-
-            <h2>
-                ${safe(name)}
-            </h2>
-
-            <div class="stats">
-
-                <div class="stat">
-
-                    <span>Media</span>
-
-                    <strong>
-                        ${getAverage(name).toFixed(2)}
-                    </strong>
-
-                </div>
-
-
-                <div class="stat">
-
-                    <span>Partidas</span>
-
-                    <strong>
-                        ${user.matches}
-                    </strong>
-
-                </div>
-
-
-                <div class="stat">
-
-                    <span>Victorias</span>
-
-                    <strong>
-                        ${user.wins}
-                    </strong>
-
-                </div>
-
-
-                <div class="stat">
-
-                    <span>Dardos</span>
-
-                    <strong>
-                        ${user.totalDarts}
-                    </strong>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    `;
-
-}
-
-
-/* =====================================================
-   SALIR DE PARTIDA
-===================================================== */
-
-function leaveGame(){
-
-    if(
-        confirm(
-            "¿Quieres salir de la partida?"
-        )
-    ){
-
-        game = null;
-
-        showHome();
-
-    }
-
-}
-
-
-/* =====================================================
-   CERRAR SESIÓN
-===================================================== */
 
 function logout(){
 
-    data.currentUser = null;
+currentUser=null;
 
-    save();
+localStorage.removeItem("dartsX_currentUser");
 
-    showLogin();
+showScreen("loginScreen");
+
+}
+
+/* =========================
+   SELECCIONAR BOT
+========================= */
+
+function showBotSelection(){
+
+const grid=document.getElementById("botGrid");
+
+grid.innerHTML="";
+
+for(let i=1;i<=10;i++){
+
+const button=document.createElement("button");
+
+button.className="bot";
+
+button.innerHTML=
+"BOT NIVEL "+i+
+"<br>Media: "+botLevels[i];
+
+button.onclick=()=>{
+
+selectedBot=i;
+
+document.querySelectorAll(".bot").forEach(b=>{
+b.classList.remove("selected");
+});
+
+button.classList.add("selected");
+
+};
+
+grid.appendChild(button);
+
+}
+
+showScreen("botScreen");
+
+}
+
+/* =========================
+   INICIAR PARTIDA
+========================= */
+
+function startGame(){
+
+playerScore=501;
+botScore=501;
+
+round=1;
+turn="player";
+
+turnScore=0;
+turnDarts=0;
+
+playerTotalPoints=0;
+playerTotalDarts=0;
+
+botTotalPoints=0;
+botTotalDarts=0;
+
+gameFinished=false;
+
+document.getElementById("playerName").textContent=currentUser;
+
+document.getElementById("botName").textContent=
+"Bot nivel "+selectedBot;
+
+document.getElementById("passButton").classList.add("hidden");
+
+updateGameScreen();
+
+showScreen("gameScreen");
+
+}
+
+/* =========================
+   BOTONES
+========================= */
+
+function createDartButtons(){
+
+const single=document.getElementById("singleButtons");
+const doubles=document.getElementById("doubleButtons");
+const triples=document.getElementById("tripleButtons");
+
+single.innerHTML="";
+doubles.innerHTML="";
+triples.innerHTML="";
+
+for(let i=1;i<=20;i++){
+
+let s=document.createElement("button");
+
+s.textContent="S"+i;
+
+s.onclick=()=>throwDart(i,"S"+i);
+
+single.appendChild(s);
+
+
+let d=document.createElement("button");
+
+d.className="double";
+
+d.textContent="D"+i;
+
+d.onclick=()=>throwDart(i*2,"D"+i);
+
+doubles.appendChild(d);
+
+
+let t=document.createElement("button");
+
+t.className="triple";
+
+t.textContent="T"+i;
+
+t.onclick=()=>throwDart(i*3,"T"+i);
+
+triples.appendChild(t);
+
+}
+
+}
+
+/* =========================
+   LANZAR DARTO
+========================= */
+
+function throwDart(points,name){
+
+if(gameFinished)return;
+
+if(turn!=="player")return;
+
+if(turnDarts>=3)return;
+
+
+/*
+IMPORTANTE:
+
+Aquí NO se bloquea el mismo botón.
+
+Puedes pulsar:
+
+T20
+T20
+T20
+
+o:
+
+D20
+D20
+D20
+
+etc.
+
+Cada pulsación cuenta como un dardo.
+*/
+
+const remaining=playerScore-turnScore-points;
+
+
+/* BUST */
+
+if(remaining<0){
+
+turnDarts=3;
+
+showGameMessage("BUST — ronda perdida.");
+
+document.getElementById("passButton")
+.classList.remove("hidden");
+
+updateGameScreen();
+
+return;
 
 }
 
 
-/* =====================================================
-   INICIO
-===================================================== */
+/*
+Si llega a 0 necesita doble.
+*/
 
-if(data.currentUser){
+if(remaining===0){
 
-    showHome();
+const isDouble=
+name.startsWith("D")||
+name==="DBull";
+
+if(!isDouble){
+
+showGameMessage(
+"Necesitas terminar con un doble o doble Bull."
+);
+
+return;
+
+}
+
+turnScore+=points;
+
+turnDarts++;
+
+playerTotalPoints+=points;
+
+playerTotalDarts++;
+
+playerScore=0;
+
+finishGame(true);
+
+return;
+
+}
+
+
+/*
+Dardo normal.
+
+Cada pulsación aumenta el contador.
+*/
+
+turnScore+=points;
+
+turnDarts++;
+
+playerTotalPoints+=points;
+
+playerTotalDarts++;
+
+
+updateGameScreen();
+
+
+/*
+Después del tercer dardo
+*/
+
+if(turnDarts===3){
+
+document.getElementById("passButton")
+.classList.remove("hidden");
+
+}
+
+}
+
+/* =========================
+   PASAR RONDA
+========================= */
+
+function passRound(){
+
+if(gameFinished)return;
+
+if(turn!=="player")return;
+
+
+/*
+Aplicamos los puntos de los 3 dardos.
+*/
+
+playerScore-=turnScore;
+
+
+/*
+Si hubo BUST no aplicamos los puntos.
+*/
+
+if(playerScore<0){
+
+playerScore+=turnScore;
+
+}
+
+
+/*
+Siguiente turno.
+*/
+
+turnScore=0;
+turnDarts=0;
+
+document.getElementById("passButton")
+.classList.add("hidden");
+
+turn="bot";
+
+updateGameScreen();
+
+setTimeout(botTurn,700);
+
+}
+
+/* =========================
+   TURNO BOT
+========================= */
+
+function botTurn(){
+
+if(gameFinished)return;
+
+turn="bot";
+
+const average=botLevels[selectedBot];
+
+let botRoundScore=0;
+
+
+/*
+El bot lanza 3 dardos.
+
+La media del bot aumenta según el nivel.
+*/
+
+for(let i=0;i<3;i++){
+
+let dart;
+
+const chance=Math.random();
+
+if(chance<0.55){
+
+dart=Math.round(
+(average/3)*
+(0.65+Math.random()*0.7)
+);
 
 }else{
 
-    showLogin();
+dart=Math.round(
+(average/3)*
+(0.3+Math.random()*1.2)
+);
+
+}
+
+dart=Math.max(1,dart);
+
+dart=Math.min(60,dart);
+
+
+/*
+No dejamos que el bot se pase.
+*/
+
+if(botScore-botRoundScore-dart<0){
+
+continue;
+
+}
+
+botRoundScore+=dart;
+
+botTotalPoints+=dart;
+
+botTotalDarts++;
+
+
+/*
+Si llega a 0.
+*/
+
+if(botScore-botRoundScore===0){
+
+break;
+
+}
+
+}
+
+
+/*
+Aplicamos la ronda del bot.
+*/
+
+botScore-=botRoundScore;
+
+updateGameScreen();
+
+
+if(botScore<=0){
+
+finishGame(false);
+
+return;
+
+}
+
+
+setTimeout(()=>{
+
+round++;
+
+turn="player";
+
+turnScore=0;
+turnDarts=0;
+
+document.getElementById("passButton")
+.classList.add("hidden");
+
+updateGameScreen();
+
+},900);
+
+}
+
+/* =========================
+   ACTUALIZAR MARCADOR
+========================= */
+
+function updateGameScreen(){
+
+/*
+El marcador muestra lo que queda
+después de los dardos de la ronda.
+*/
+
+document.getElementById("playerScoreDisplay")
+.textContent=
+Math.max(0,playerScore-turnScore);
+
+document.getElementById("botScoreDisplay")
+.textContent=botScore;
+
+document.getElementById("roundText")
+.textContent="Ronda "+round;
+
+document.getElementById("turnText")
+.textContent=
+turn==="player"?"Tu turno":"Turno del bot";
+
+document.getElementById("dartCounter")
+.textContent=
+"Dardos: "+turnDarts+" / 3";
+
+document.getElementById("turnScoreText")
+.textContent=
+"Puntos de ronda: "+turnScore;
+
+
+const playerAverage=
+playerTotalDarts>0
+?playerTotalPoints/playerTotalDarts*3
+:0;
+
+const botAverage=
+botTotalDarts>0
+?botTotalPoints/botTotalDarts*3
+:0;
+
+document.getElementById("playerAverage")
+.textContent=playerAverage.toFixed(2);
+
+document.getElementById("botAverage")
+.textContent=botAverage.toFixed(2);
+
+document.getElementById("playerBox")
+.classList.toggle(
+"active-player",
+turn==="player"
+);
+
+document.getElementById("botBox")
+.classList.toggle(
+"active-player",
+turn==="bot"
+);
+
+showCheckout();
+
+}
+
+/* =========================
+   CHECKOUT
+========================= */
+
+function showCheckout(){
+
+const box=document.getElementById("checkoutBox");
+
+let score=playerScore-turnScore;
+
+box.classList.add("hidden");
+
+const checkouts={
+
+170:"T20 T20 Bull",
+167:"T20 T19 Bull",
+164:"T20 T18 Bull",
+161:"T20 T17 Bull",
+
+160:"T20 T20 D20",
+158:"T20 T20 D19",
+157:"T20 T19 D20",
+156:"T20 T20 D18",
+155:"T20 T19 D19",
+154:"T20 T18 D20",
+153:"T20 T19 D18",
+152:"T20 T20 D16",
+151:"T20 T17 D20",
+150:"T20 T18 D18",
+
+140:"T20 T20 D10",
+130:"T20 T18 D8",
+120:"T20 T20 D20",
+110:"T20 T18 D10",
+100:"T20 D20",
+90:"T20 D15",
+80:"T20 D10",
+70:"T18 D8",
+60:"S20 D20",
+50:"Bull",
+40:"D20",
+32:"D16",
+24:"D12",
+20:"D10",
+16:"D8",
+12:"D6",
+10:"D5",
+8:"D4",
+6:"D3",
+4:"D2",
+2:"D1"
+
+};
+
+if(checkouts[score]){
+
+box.textContent=
+"💡 Checkout: "+checkouts[score];
+
+box.classList.remove("hidden");
+
+}
+
+}
+
+/* =========================
+   MENSAJES
+========================= */
+
+function showGameMessage(message){
+
+const element=document.getElementById("gameMessage");
+
+element.textContent=message;
+
+setTimeout(()=>{
+element.textContent="";
+},2500);
+
+}
+
+/* =========================
+   FINAL PARTIDA
+========================= */
+
+function finishGame(playerWon){
+
+gameFinished=true;
+
+const users=getUsers();
+
+const user=users[currentUser];
+
+user.games++;
+
+if(playerWon){
+user.wins++;
+}else{
+user.losses++;
+}
+
+user.totalPoints+=playerTotalPoints;
+user.totalDarts+=playerTotalDarts;
+
+saveUsers(users);
+
+showGameMessage(
+playerWon
+?"🏆 ¡HAS GANADO!"
+:"🤖 HA GANADO EL BOT"
+);
+
+setTimeout(()=>{
+
+if(confirm(
+playerWon
+?"¡Has ganado! ¿Volver al menú?"
+:"Has perdido. ¿Volver al menú?"
+)){
+
+showScreen("menuScreen");
+
+}else{
+
+showAccount();
+
+}
+
+},1200);
+
+}
+
+/* =========================
+   CUENTA
+========================= */
+
+function showAccount(){
+
+const users=getUsers();
+
+const user=users[currentUser];
+
+document.getElementById("accountUsername")
+.textContent=currentUser;
+
+document.getElementById("gamesPlayed")
+.textContent=user.games;
+
+document.getElementById("victories")
+.textContent=user.wins;
+
+document.getElementById("defeats")
+.textContent=user.losses;
+
+const average=
+user.totalDarts>0
+?user.totalPoints/user.totalDarts*3
+:0;
+
+document.getElementById("accountAverage")
+.textContent=average.toFixed(2);
+
+createRanking();
+
+showScreen("accountScreen");
+
+}
+
+/* =========================
+   RANKING
+========================= */
+
+function createRanking(){
+
+const users=getUsers();
+
+const ranking=Object.entries(users)
+.map(([name,data])=>{
+
+const average=
+data.totalDarts>0
+?data.totalPoints/data.totalDarts*3
+:0;
+
+return{
+name:name,
+average:average
+};
+
+})
+.sort((a,b)=>b.average-a.average);
+
+
+const container=document.getElementById("ranking");
+
+container.innerHTML="";
+
+ranking.forEach((player,index)=>{
+
+const div=document.createElement("div");
+
+div.className="ranking-item";
+
+div.innerHTML=
+"<b>#"+(index+1)+" "+
+player.name+
+"</b> — Media: "+
+player.average.toFixed(2);
+
+container.appendChild(div);
+
+});
+
+}
+
+/* =========================
+   SALIR
+========================= */
+
+function confirmExitGame(){
+
+if(confirm("¿Seguro que quieres salir de la partida?")){
+
+gameFinished=true;
+
+showScreen("menuScreen");
+
+}
+
+}
+
+/* =========================
+   INICIO
+========================= */
+
+createDartButtons();
+
+const savedUser=
+localStorage.getItem("dartsX_currentUser");
+
+if(savedUser){
+
+const users=getUsers();
+
+if(users[savedUser]){
+
+currentUser=savedUser;
+
+document.getElementById("menuUsername")
+.textContent=savedUser;
+
+showScreen("menuScreen");
+
+}
 
 }
 
