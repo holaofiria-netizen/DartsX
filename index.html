@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -41,10 +40,15 @@ button{cursor:pointer}
 .hidden{display:none!important}
 .stats{background:#222;padding:15px;margin:10px 0;border-radius:10px}
 .ranking-item{padding:12px;border-bottom:1px solid #444}
-@media(max-width:500px){
-.score{font-size:40px}
-.dart-grid button{font-size:12px;padding:12px 2px}
-}
+.local-config{background:#202020;padding:14px;border-radius:12px;margin:12px 0}
+.local-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}
+.local-player{background:#202020;border-radius:12px;padding:12px;text-align:center;min-width:0}
+.local-player.active-player{border:3px solid #e63946}
+.local-player .score{font-size:38px}
+.local-player small{color:#aaa;display:block}
+.local-config label{display:block;margin:10px 0 5px}
+.local-config select{width:100%;padding:12px;border:0;border-radius:9px;background:#303030;color:white;font-size:16px}
+@media(max-width:500px){.local-player .score{font-size:30px}.score{font-size:40px}.dart-grid button{font-size:12px;padding:12px 2px}}
 </style>
 </head>
 <body>
@@ -90,7 +94,53 @@ button{cursor:pointer}
 <h1>Elige el modo</h1>
 <button class="main" onclick="selectGameMode('501')">501 — JUGAR CONTRA UN BOT</button>
 <button class="main" onclick="selectGameMode('101')">101 — ENTRENAMIENTO INDIVIDUAL</button>
+<button class="main" onclick="selectGameMode('501local')">501 — 1 VS 1 / HASTA 4 JUGADORES LOCAL</button>
 <button class="secondary" onclick="showScreen('menuScreen')">VOLVER</button>
+</div>
+</div>
+
+<div id="localSetupScreen" class="screen">
+<div class="card">
+<div class="logo">🎯 DartsX</div>
+<h1>501 LOCAL</h1>
+<div class="local-config">
+<label for="localPlayerCount"><b>Número de jugadores</b></label>
+<select id="localPlayerCount" onchange="updateLocalSetup()">
+<option value="2">2 jugadores</option>
+<option value="4">4 jugadores</option>
+</select>
+<label>Jugador 1</label>
+<input id="localName1" maxlength="18" value="Jugador 1">
+<label>Jugador 2</label>
+<input id="localName2" maxlength="18" value="Jugador 2">
+<div id="extraLocalNames" class="hidden">
+<label>Jugador 3</label>
+<input id="localName3" maxlength="18" value="Jugador 3">
+<label>Jugador 4</label>
+<input id="localName4" maxlength="18" value="Jugador 4">
+</div>
+<div id="localFormatArea" class="hidden">
+<label for="localFormat"><b>Formato de juego</b></label>
+<select id="localFormat" onchange="updateLocalSetup()">
+<option value="individual">Individual (todos contra todos)</option>
+<option value="pairs">Por parejas (2 contra 2)</option>
+</select>
+<div id="pairSelectors" class="hidden">
+<p>Elige la pareja de cada jugador:</p>
+<label>Jugador 1</label>
+<select id="pair1"><option value="A">Pareja 1</option><option value="B">Pareja 2</option></select>
+<label>Jugador 2</label>
+<select id="pair2"><option value="A">Pareja 1</option><option value="B" selected>Pareja 2</option></select>
+<label>Jugador 3</label>
+<select id="pair3"><option value="A" selected>Pareja 1</option><option value="B">Pareja 2</option></select>
+<label>Jugador 4</label>
+<select id="pair4"><option value="A">Pareja 1</option><option value="B" selected>Pareja 2</option></select>
+</div>
+</div>
+</div>
+<div id="localSetupMessage" class="message"></div>
+<button class="main" onclick="startLocalGame()">EMPEZAR 501 LOCAL</button>
+<button class="secondary" onclick="showScreen('modeScreen')">VOLVER</button>
 </div>
 </div>
 
@@ -110,7 +160,8 @@ button{cursor:pointer}
 <b id="roundText">Ronda 1</b><br>
 <span id="turnText">Tu turno</span>
 </div>
-<div class="scores">
+<div id="localScoreboard" class="local-grid hidden"></div>
+<div id="classicScores" class="scores">
 <div id="playerBox" class="player-box active-player">
 <h3 id="playerName">Jugador</h3>
 <div id="playerScoreDisplay" class="score">501</div>
@@ -179,6 +230,13 @@ let playerTotalDarts=0;
 let botTotalPoints=0;
 let botTotalDarts=0;
 let gameFinished=false;
+let localPlayers=[];
+let localTurnIndex=0;
+let localTurnScore=0;
+let localTurnDarts=0;
+let localTurnBust=false;
+let localRound=1;
+let localIsPairs=false;
 
 function showScreen(id){
 document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
@@ -256,6 +314,7 @@ showScreen("modeScreen");
 function selectGameMode(mode){
 gameMode=mode;
 if(mode==="501")showBotSelection();
+else if(mode==="501local"){updateLocalSetup();showScreen("localSetupScreen");}
 else startGame();
 }
 
@@ -278,7 +337,122 @@ grid.appendChild(button);
 showScreen("botScreen");
 }
 
+function updateLocalSetup(){
+const count=Number(document.getElementById("localPlayerCount").value);
+document.getElementById("extraLocalNames").classList.toggle("hidden",count!==4);
+document.getElementById("localFormatArea").classList.toggle("hidden",count!==4);
+const pairs=count===4&&document.getElementById("localFormat").value==="pairs";
+document.getElementById("pairSelectors").classList.toggle("hidden",!pairs);
+document.getElementById("localSetupMessage").textContent="";
+}
+
+function startLocalGame(){
+const count=Number(document.getElementById("localPlayerCount").value);
+const names=[];
+for(let i=1;i<=count;i++){
+const name=document.getElementById("localName"+i).value.trim();
+if(!name){
+document.getElementById("localSetupMessage").textContent="Escribe el nombre de todos los jugadores.";
+return;
+}
+names.push(name);
+}
+if(new Set(names.map(n=>n.toLowerCase())).size!==names.length){
+document.getElementById("localSetupMessage").textContent="Cada jugador debe tener un nombre diferente.";
+return;
+}
+localIsPairs=count===4&&document.getElementById("localFormat").value==="pairs";
+localPlayers=[];
+if(localIsPairs){
+const assignments=[1,2,3,4].map(i=>document.getElementById("pair"+i).value);
+if(assignments.filter(x=>x==="A").length!==2||assignments.filter(x=>x==="B").length!==2){
+document.getElementById("localSetupMessage").textContent="Cada pareja debe tener exactamente 2 jugadores.";
+return;
+}
+["A","B"].forEach((team,index)=>{
+const members=names.filter((n,i)=>assignments[i]===team);
+localPlayers.push({name:"Pareja "+(index+1),members,score:501,totalPoints:0,totalDarts:0});
+});
+}else{
+names.forEach(name=>localPlayers.push({name,members:[name],score:501,totalPoints:0,totalDarts:0}));
+}
+gameMode="501local";
+localTurnIndex=0;
+localTurnScore=0;
+localTurnDarts=0;
+localTurnBust=false;
+localRound=1;
+gameFinished=false;
+turn="local";
+turnScore=0;
+turnDarts=0;
+turnBust=false;
+document.getElementById("classicScores").classList.add("hidden");
+document.getElementById("localScoreboard").classList.remove("hidden");
+document.getElementById("checkoutBox").classList.add("hidden");
+document.getElementById("passButton").classList.add("hidden");
+document.getElementById("gameMessage").textContent="";
+document.querySelector("#gameScreen h1").textContent=localIsPairs?"🎯 DartsX — 501 por parejas":"🎯 DartsX — 501 local";
+renderLocalScoreboard();
+updateGameScreen();
+showScreen("gameScreen");
+}
+
+function renderLocalScoreboard(){
+const board=document.getElementById("localScoreboard");
+board.innerHTML="";
+localPlayers.forEach((p,index)=>{
+const box=document.createElement("div");
+box.className="local-player"+(index===localTurnIndex?" active-player":"");
+const title=document.createElement("h3");
+title.textContent=p.name;
+const members=document.createElement("small");
+members.textContent=p.members.join(" + ");
+const score=document.createElement("div");
+score.className="score";
+score.textContent=(index===localTurnIndex&&!localTurnBust)?p.score-localTurnScore:p.score;
+const avg=document.createElement("div");
+avg.className="average";
+avg.textContent="Media: "+(p.totalDarts?p.totalPoints/p.totalDarts*3:0).toFixed(2);
+box.append(title,members,score,avg);
+board.appendChild(box);
+});
+}
+
+function passLocalRound(){
+if(gameFinished||localTurnDarts<3&&!localTurnBust)return;
+const player=localPlayers[localTurnIndex];
+if(!localTurnBust)player.score-=localTurnScore;
+if(player.score===0){
+finishLocalGame();
+return;
+}
+localTurnIndex=(localTurnIndex+1)%localPlayers.length;
+if(localTurnIndex===0)localRound++;
+localTurnScore=0;
+localTurnDarts=0;
+localTurnBust=false;
+turnScore=0;
+turnDarts=0;
+turnBust=false;
+document.getElementById("passButton").classList.add("hidden");
+document.getElementById("gameMessage").textContent="";
+updateGameScreen();
+}
+
+function finishLocalGame(){
+gameFinished=true;
+const winner=localPlayers[localTurnIndex];
+showGameMessage("🏆 ¡"+winner.name+" ha ganado!");
+setTimeout(()=>{
+alert("¡"+winner.name+" ha ganado la partida!");
+showScreen("menuScreen");
+},500);
+}
+
 function startGame(){
+document.getElementById("localScoreboard").classList.add("hidden");
+document.getElementById("classicScores").classList.remove("hidden");
 const startingScore=gameMode==="101"?101:501;
 playerScore=startingScore;
 botScore=501;
@@ -338,7 +512,6 @@ t.onclick=()=>throwDart(i*3,"T"+i);
 triples.appendChild(t);
 }
 
-// OUT vale 0 y cuenta como un dardo en ambos modos.
 const out=document.createElement("button");
 out.className="out";
 out.innerHTML="OUT<br>0";
@@ -347,12 +520,42 @@ single.appendChild(out);
 }
 
 function throwDart(points,name){
-if(gameFinished||turn!=="player"||turnDarts>=3)return;
+if(gameMode==="501local"){
+if(gameFinished||localTurnDarts>=3)return;
+const player=localPlayers[localTurnIndex];
+const remaining=player.score-localTurnScore-points;
+const isDouble=name.startsWith("D")||name==="DBull";
+if(remaining<0||(remaining===0&&!isDouble)){
+localTurnBust=true;
+localTurnDarts=3;
+turnBust=true;
+turnDarts=3;
+showGameMessage(remaining===0?"Necesitas cerrar con doble. Ronda anulada.":"BUST: te has pasado. Ronda anulada.");
+document.getElementById("passButton").classList.remove("hidden");
+updateGameScreen();
+return;
+}
+localTurnScore+=points;
+localTurnDarts++;
+player.totalPoints+=points;
+player.totalDarts++;
+turnScore=localTurnScore;
+turnDarts=localTurnDarts;
+if(remaining===0){
+player.score=0;
+renderLocalScoreboard();
+finishLocalGame();
+return;
+}
+if(localTurnDarts===3)document.getElementById("passButton").classList.remove("hidden");
+updateGameScreen();
+return;
+}
 
+if(gameFinished||turn!=="player"||turnDarts>=3)return;
 const remaining=playerScore-turnScore-points;
 const isDouble=name.startsWith("D")||name==="DBull";
 
-// En 101, pasarse, quedarse en 1 o acabar sin doble es BUST.
 if(gameMode==="101"&&(remaining<0||remaining===1||(remaining===0&&!isDouble))){
 turnBust=true;
 turnDarts=3;
@@ -403,10 +606,13 @@ document.getElementById("passButton").classList.remove("hidden");
 }
 
 function passRound(){
+if(gameMode==="501local"){
+passLocalRound();
+return;
+}
 if(gameFinished||turn!=="player")return;
 
 if(!turnBust)playerScore-=turnScore;
-
 turnScore=0;
 turnDarts=0;
 turnBust=false;
@@ -434,17 +640,14 @@ let botRoundScore=0;
 for(let i=0;i<3;i++){
 let dart;
 const chance=Math.random();
-
 if(chance<0.55){
 dart=Math.round((average/3)*(0.65+Math.random()*0.7));
 }else{
 dart=Math.round((average/3)*(0.3+Math.random()*1.2));
 }
-
 dart=Math.max(1,dart);
 dart=Math.min(60,dart);
 if(botScore-botRoundScore-dart<0)continue;
-
 botRoundScore+=dart;
 botTotalPoints+=dart;
 botTotalDarts++;
@@ -470,6 +673,18 @@ updateGameScreen();
 }
 
 function updateGameScreen(){
+if(gameMode==="501local"){
+document.getElementById("roundText").textContent="Ronda "+localRound;
+document.getElementById("turnText").textContent="Turno de: "+localPlayers[localTurnIndex].name;
+document.getElementById("dartCounter").textContent="Dardos: "+localTurnDarts+" / 3";
+document.getElementById("turnScoreText").textContent="Puntos de ronda: "+localTurnScore;
+document.getElementById("passButton").classList.toggle("hidden",localTurnDarts<3&&!localTurnBust);
+document.getElementById("passButton").textContent="PASAR TURNO";
+renderLocalScoreboard();
+return;
+}
+
+document.getElementById("passButton").textContent="PASAR DE RONDA";
 document.getElementById("playerScoreDisplay").textContent=turnBust?playerScore:Math.max(0,playerScore-turnScore);
 document.getElementById("botScoreDisplay").textContent=botScore;
 document.getElementById("roundText").textContent="Ronda "+round;
@@ -488,7 +703,6 @@ showCheckout();
 
 function showCheckout(){
 const box=document.getElementById("checkoutBox");
-
 if(gameMode!=="101"){
 box.classList.add("hidden");
 box.textContent="";
@@ -554,10 +768,8 @@ gameFinished=true;
 const users=getUsers();
 const user=users[currentUser];
 user.games++;
-
 if(playerWon)user.wins++;
 else user.losses++;
-
 user.totalPoints+=playerTotalPoints;
 user.totalDarts+=playerTotalDarts;
 saveUsers(users);
@@ -580,12 +792,10 @@ showAccount();
 function showAccount(){
 const users=getUsers();
 const user=users[currentUser];
-
 document.getElementById("accountUsername").textContent=currentUser;
 document.getElementById("gamesPlayed").textContent=user.games;
 document.getElementById("victories").textContent=user.wins;
 document.getElementById("defeats").textContent=user.losses;
-
 const average=user.totalDarts>0?user.totalPoints/user.totalDarts*3:0;
 document.getElementById("accountAverage").textContent=average.toFixed(2);
 createRanking();
@@ -601,7 +811,6 @@ return{name:name,average:average};
 
 const container=document.getElementById("ranking");
 container.innerHTML="";
-
 ranking.forEach((player,index)=>{
 const div=document.createElement("div");
 div.className="ranking-item";
